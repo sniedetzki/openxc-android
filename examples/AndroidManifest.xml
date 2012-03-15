@@ -10,11 +10,6 @@
           </intent-filter>
       </activity>
       <service android:name="com.openxc.VehicleService"/>
-      <service android:name="com.openxc.remote.RemoteVehicleService" android:process=":remote">
-          <intent-filter>
-              <action android:name="com.openxc.remote.RemoteVehicleServiceInterface" />
-          </intent-filter>
-      </service>
   </application>
 
   <supports-screens android:largeScreens="true" android:xlargeScreens="true"
