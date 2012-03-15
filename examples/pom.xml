@@ -23,6 +23,10 @@
             <version>${project.version}</version>
             <type>apklib</type>
         </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+        </dependency>
     </dependencies>
     <build>
         <pluginManagement>

@@ -1,5 +1,12 @@
 package com.openxc.examples.dashboard;
 
+import java.io.File;
+import org.apache.commons.io.FileUtils;
+import java.net.URISyntaxException;
+import java.net.URI;
+import java.io.IOException;
+import com.openxc.remote.sources.trace.TraceVehicleDataSource;
+
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
@@ -68,6 +75,7 @@ public class VehicleDashboardActivity extends Activity {
     private TextView mDoorStatusView;
     private TextView mWiperStatusView;
     private TextView mHeadlampStatusView;
+    private URI traceUri;
     StringBuffer mBuffer;
 
     WindshieldWiperStatus.Listener mWiperListener =
@@ -341,6 +349,9 @@ public class VehicleDashboardActivity extends Activity {
                     ).getService();
 
             try {
+                mVehicleService.setDataSource(
+                        TraceVehicleDataSource.class.getName(),
+                        traceUri.toString());
                 mVehicleService.addListener(SteeringWheelAngle.class,
                         mSteeringWheelListener);
                 mVehicleService.addListener(VehicleSpeed.class,
@@ -398,6 +409,8 @@ public class VehicleDashboardActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        copyTraces();
+
         setContentView(R.layout.main);
         Log.i(TAG, "Vehicle dashboard created");
 
@@ -444,6 +457,20 @@ public class VehicleDashboardActivity extends Activity {
         mDoorStatusView = (TextView) findViewById(
                 R.id.door_status);
         mBuffer = new StringBuffer();
+    }
+
+    private void copyTraces() {
+        try {
+            traceUri = new URI("file:///sdcard/com.openxc/trace.json");
+        } catch(URISyntaxException e) {
+            Log.w(TAG, "Couldn't construct resource URIs: " + e);
+        }
+
+        try {
+            FileUtils.copyInputStreamToFile(
+                    getResources().openRawResource(R.raw.driving),
+                    new File(traceUri));
+        } catch(IOException e) {}
     }
 
     @Override
