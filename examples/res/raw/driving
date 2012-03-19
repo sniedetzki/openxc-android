@@ -998,7 +998,6 @@
 {"name":"headlamp_status","value":false}
 {"name":"fine_odometer_since_restart","value":0.066071}
 {"name":"steering_wheel_angle","value":11.163300}
-Received 1000 messages so far (100% valid)...
 {"name":"fine_odometer_since_restart","value":0.066071}
 {"name":"steering_wheel_angle","value":11.163300}
 {"name":"parking_brake_status","value":false}
@@ -1999,7 +1998,6 @@ Received 1000 messages so far (100% valid)...
 {"name":"fine_odometer_since_restart","value":0.066071}
 {"name":"parking_brake_status","value":false}
 {"name":"headlamp_status","value":false}
-Received 2000 messages so far (100% valid)...
 {"name":"steering_wheel_angle","value":11.163300}
 {"name":"fine_odometer_since_restart","value":0.066071}
 {"name":"fuel_level","value":0.801706}
@@ -3000,7 +2998,6 @@ Received 2000 messages so far (100% valid)...
 {"name":"parking_brake_status","value":false}
 {"name":"headlamp_status","value":false}
 {"name":"ignition_status","value":"run"}
-Received 3000 messages so far (100% valid)...
 {"name":"steering_wheel_angle","value":11.075399}
 {"name":"powertrain_torque","value":-1.000000}
 {"name":"accelerator_pedal_position","value":0.000000}
@@ -4001,7 +3998,6 @@ Received 3000 messages so far (100% valid)...
 {"name":"fuel_consumed_since_restart","value":0.083325}
 {"name":"parking_brake_status","value":false}
 {"name":"headlamp_status","value":false}
-Received 4000 messages so far (100% valid)...
 {"name":"ignition_status","value":"run"}
 {"name":"windshield_wiper_status","value":false}
 {"name":"steering_wheel_angle","value":291.300598}
@@ -5002,7 +4998,6 @@ Received 4000 messages so far (100% valid)...
 {"name":"steering_wheel_angle","value":55.684650}
 {"name":"vehicle_speed","value":20.170000}
 {"name":"engine_speed","value":1298.000000}
-Received 5000 messages so far (100% valid)...
 {"name":"parking_brake_status","value":false}
 {"name":"headlamp_status","value":false}
 {"name":"ignition_status","value":"run"}
@@ -6003,7 +5998,6 @@ Received 5000 messages so far (100% valid)...
 {"name":"steering_wheel_angle","value":-150.265045}
 {"name":"powertrain_torque","value":32.000000}
 {"name":"accelerator_pedal_position","value":6.800000}
-Received 6000 messages so far (100% valid)...
 {"name":"engine_speed","value":1310.000000}
 {"name":"vehicle_speed","value":24.529999}
 {"name":"brake_pedal_status","value":false}
@@ -7004,7 +6998,6 @@ Received 6000 messages so far (100% valid)...
 {"name":"powertrain_torque","value":100.000000}
 {"name":"accelerator_pedal_position","value":21.500000}
 {"name":"engine_speed","value":1692.000000}
-Received 7000 messages so far (100% valid)...
 {"name":"vehicle_speed","value":32.119999}
 {"name":"fine_odometer_since_restart","value":0.509899}
 {"name":"parking_brake_status","value":false}
@@ -8005,7 +7998,6 @@ Received 7000 messages so far (100% valid)...
 {"name":"headlamp_status","value":false}
 {"name":"ignition_status","value":"run"}
 {"name":"steering_wheel_angle","value":19.469849}
-Received 8000 messages so far (100% valid)...
 {"name":"powertrain_torque","value":-1.000000}
 {"name":"accelerator_pedal_position","value":0.000000}
 {"name":"engine_speed","value":1286.000000}
@@ -9006,7 +8998,6 @@ Received 8000 messages so far (100% valid)...
 {"name":"powertrain_torque","value":-5.000000}
 {"name":"accelerator_pedal_position","value":0.000000}
 {"name":"engine_speed","value":1424.000000}
-Received 9000 messages so far (100% valid)...
 {"name":"fuel_consumed_since_restart","value":0.126025}
 {"name":"parking_brake_status","value":false}
 {"name":"headlamp_status","value":false}
@@ -10007,7 +9998,6 @@ Received 9000 messages so far (100% valid)...
 {"name":"steering_wheel_angle","value":-0.659250}
 {"name":"engine_speed","value":1242.000000}
 {"name":"parking_brake_status","value":false}
-Received 10000 messages so far (100% valid)...
 {"name":"headlamp_status","value":false}
 {"name":"ignition_status","value":"run"}
 {"name":"steering_wheel_angle","value":-0.659250}
@@ -11008,7 +10998,6 @@ Received 10000 messages so far (100% valid)...
 {"name":"headlamp_status","value":false}
 {"name":"ignition_status","value":"run"}
 {"name":"windshield_wiper_status","value":false}
-Received 11000 messages so far (100% valid)...
 {"name":"steering_wheel_angle","value":172.899292}
 {"name":"powertrain_torque","value":-17.000000}
 {"name":"accelerator_pedal_position","value":0.000000}
@@ -12009,7 +11998,6 @@ Received 11000 messages so far (100% valid)...
 {"name":"engine_speed","value":1592.000000}
 {"name":"powertrain_torque","value":80.000000}
 {"name":"accelerator_pedal_position","value":14.400001}
-Received 12000 messages so far (100% valid)...
 {"name":"engine_speed","value":1596.000000}
 {"name":"vehicle_speed","value":26.740000}
 {"name":"brake_pedal_status","value":false}
@@ -13010,7 +12998,6 @@ Received 12000 messages so far (100% valid)...
 {"name":"steering_wheel_angle","value":1.889850}
 {"name":"powertrain_torque","value":33.000000}
 {"name":"accelerator_pedal_position","value":11.300000}
-Received 13000 messages so far (100% valid)...
 {"name":"engine_speed","value":1220.000000}
 {"name":"vehicle_speed","value":31.760000}
 {"name":"brake_pedal_status","value":false}
@@ -14011,7 +13998,6 @@ Received 13000 messages so far (100% valid)...
 {"name":"door_status","value":"driver","event":false}
 {"name":"door_status","value":"passenger","event":false}
 {"name":"door_status","value":"rear_left","event":false}
-Received 14000 messages so far (100% valid)...
 {"name":"door_status","value":"rear_right","event":false}
 {"name":"odometer","value":0.000000}
 {"name":"high_beam_status","value":false}
@@ -15012,7 +14998,6 @@ Received 14000 messages so far (100% valid)...
 {"name":"ignition_status","value":"run"}
 {"name":"steering_wheel_angle","value":-1.098750}
 {"name":"powertrain_torque","value":-19.000000}
-Received 15000 messages so far (100% valid)...
 {"name":"accelerator_pedal_position","value":0.000000}
 {"name":"engine_speed","value":1756.000000}
 {"name":"vehicle_speed","value":51.949997}
@@ -16013,7 +15998,6 @@ Received 15000 messages so far (100% valid)...
 {"name":"parking_brake_status","value":false}
 {"name":"headlamp_status","value":false}
 {"name":"ignition_status","value":"run"}
-Received 16000 messages so far (100% valid)...
 {"name":"steering_wheel_angle","value":224.364746}
 {"name":"powertrain_torque","value":61.000000}
 {"name":"accelerator_pedal_position","value":10.900001}
@@ -17014,7 +16998,6 @@ Received 16000 messages so far (100% valid)...
 {"name":"headlamp_status","value":false}
 {"name":"ignition_status","value":"run"}
 {"name":"windshield_wiper_status","value":false}
-Received 17000 messages so far (100% valid)...
 {"name":"steering_wheel_angle","value":11.163300}
 {"name":"powertrain_torque","value":2.000000}
 {"name":"accelerator_pedal_position","value":4.700000}
@@ -18015,7 +17998,6 @@ Received 17000 messages so far (100% valid)...
 {"name":"fuel_consumed_since_restart","value":0.200325}
 {"name":"parking_brake_status","value":false}
 {"name":"headlamp_status","value":false}
-Received 18000 messages so far (100% valid)...
 {"name":"ignition_status","value":"run"}
 {"name":"windshield_wiper_status","value":false}
 {"name":"steering_wheel_angle","value":191.182495}
@@ -19016,7 +18998,6 @@ Received 18000 messages so far (100% valid)...
 {"name":"fuel_consumed_since_restart","value":0.202350}
 {"name":"transmission_gear_position","value":"neutral"}
 {"name":"parking_brake_status","value":false}
-Received 19000 messages so far (100% valid)...
 {"name":"headlamp_status","value":false}
 {"name":"latitude","value":42.291576}
 {"name":"longitude","value":-83.237663}
