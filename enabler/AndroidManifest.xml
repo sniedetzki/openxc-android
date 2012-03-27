@@ -17,6 +17,8 @@
           </intent-filter>
       </activity>
 
+      <activity android:name=".SettingsActivity" />
+
       <activity android:name="com.openxc.remote.sources.usb.UsbDeviceAttachmentActivity">
             <intent-filter>
                 <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
@@ -38,5 +40,6 @@
   <uses-permission android:name="android.permission.ACCESS_MOCK_LOCATION"/>
   <uses-feature android:name="android.hardware.usb.host"
           android:required="true" />
+  <uses-sdk android:minSdkVersion="12" />
 </manifest>
 
