@@ -44,6 +44,8 @@ import android.location.LocationManager;
 import android.os.IBinder;
 import android.os.RemoteCallbackList;
 import android.os.RemoteException;
+import android.os.PowerManager;
+import android.os.PowerManager.WakeLock;
 
 import android.util.Log;
 
@@ -63,6 +65,17 @@ import android.util.Log;
  * The service initializes and connects to the vehicle data source when bound.
  * The data source is selected by the application by passing extra data along
  * with the bind Intent - see the {@link #onBind(Intent)} method for details.
+ * Only one data source is supported at a time.
+ *
+ * When a message is received from the data source, it is passed to any and all
+ * registered message "sinks" - these receivers conform to the
+ * {@link com.openxc.remote.sinks.VehicleDataSinkInterface}. There will always
+ * be at least one sink that stores the latest messages and handles passing on
+ * data to users of the VehicleService class. Other possible sinks include the
+ * {@link com.openxc.remote.sinks.FileRecorderSink} which records a trace of the
+ * raw OpenXC measurements to a file and a web streaming sink (which streams the
+ * raw data to a web application). Users cannot register additional sinks at
+ * this time, but the feature is planned.
  */
 public class RemoteVehicleService extends Service {
     private final static String TAG = "RemoteVehicleService";
@@ -70,6 +83,7 @@ public class RemoteVehicleService extends Service {
             UsbVehicleDataSource.class.getName();
     public final static String VEHICLE_LOCATION_PROVIDER = "vehicle";
 
+    private int mMessagesReceived = 0;
     private Map<String, RawMeasurement> mMeasurements;
     private VehicleDataSourceInterface mDataSource;
     private VehicleDataSinkInterface mDataSink;
@@ -79,6 +93,7 @@ public class RemoteVehicleService extends Service {
     private BlockingQueue<String> mNotificationQueue;
     private NotificationThread mNotificationThread;
     private LocationManager mLocationManager;
+    private WakeLock mWakeLock;
 
     /**
      * A callback receiver for the vehicle data source.
@@ -139,6 +154,7 @@ public class RemoteVehicleService extends Service {
                 if(mDataSink != null) {
                     mDataSink.receive(measurementId, value, event);
                 }
+                mMessagesReceived++;
             }
 
             public void receive(String measurementId, Object value) {
@@ -172,6 +188,7 @@ public class RemoteVehicleService extends Service {
                 new HashMap<String, RemoteCallbackList<
                 RemoteVehicleServiceListenerInterface>>());
         setupMockLocations();
+        acquireWakeLock();
     }
 
     /**
@@ -192,6 +209,7 @@ public class RemoteVehicleService extends Service {
             mNotificationThread.done();
             mNotificationThread = null;
         }
+        releaseWakeLock();
         // TODO loop over and kill all callbacks in remote callback list
     }
 
@@ -371,6 +389,10 @@ public class RemoteVehicleService extends Service {
                 Log.i(TAG, "Setting trace recording status to " + enabled);
                 RemoteVehicleService.this.enableRecording(enabled);
             }
+
+            public int getMessageCount() {
+                return RemoteVehicleService.this.getMessageCount();
+            }
     };
 
     private class NotificationThread extends Thread {
@@ -439,11 +461,28 @@ public class RemoteVehicleService extends Service {
 
     private void enableRecording(boolean enabled) {
         if(enabled && mDataSink == null) {
-            mDataSink = new FileRecorderSink();
+            mDataSink = new FileRecorderSink(this);
             Log.i(TAG, "Initialized vehicle data sink " + mDataSink);
         } else if(mDataSink != null) {
             mDataSink.stop();
             mDataSink = null;
+        }
+    }
+
+    private int getMessageCount() {
+        return mMessagesReceived;
+    }
+
+    private void acquireWakeLock() {
+        PowerManager manager = (PowerManager) getSystemService(
+                Context.POWER_SERVICE);
+        mWakeLock = manager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, TAG);
+        mWakeLock.acquire();
+    }
+
+    private void releaseWakeLock() {
+        if(mWakeLock != null && mWakeLock.isHeld()) {
+            mWakeLock.release();
         }
     }
 }
