@@ -5,7 +5,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -13,30 +12,31 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.openxc.VehicleManager;
 import com.openxc.examples.R;
-import com.openxc.measurements.BrakePedalStatus;
-import com.openxc.measurements.HeadlampStatus;
-import com.openxc.measurements.EngineSpeed;
-import com.openxc.measurements.TorqueAtTransmission;
 import com.openxc.measurements.AcceleratorPedalPosition;
-import com.openxc.measurements.Latitude;
-import com.openxc.measurements.Longitude;
-import com.openxc.measurements.ParkingBrakeStatus;
-import com.openxc.measurements.IgnitionStatus;
-import com.openxc.measurements.SteeringWheelAngle;
-import com.openxc.measurements.TransmissionGearPosition;
-import com.openxc.measurements.UnrecognizedMeasurementTypeException;
-import com.openxc.measurements.VehicleDoorStatus;
-import com.openxc.measurements.VehicleButtonEvent;
-import com.openxc.measurements.Measurement;
-import com.openxc.measurements.VehicleSpeed;
+import com.openxc.measurements.BrakePedalStatus;
+import com.openxc.measurements.EngineSpeed;
+import com.openxc.measurements.FineOdometer;
 import com.openxc.measurements.FuelConsumed;
 import com.openxc.measurements.FuelLevel;
+import com.openxc.measurements.HeadlampStatus;
+import com.openxc.measurements.IgnitionStatus;
+import com.openxc.measurements.Latitude;
+import com.openxc.measurements.Longitude;
+import com.openxc.measurements.Measurement;
 import com.openxc.measurements.Odometer;
-import com.openxc.measurements.FineOdometer;
+import com.openxc.measurements.ParkingBrakeStatus;
+import com.openxc.measurements.SteeringWheelAngle;
+import com.openxc.measurements.TorqueAtTransmission;
+import com.openxc.measurements.TransmissionGearPosition;
+import com.openxc.measurements.UnrecognizedMeasurementTypeException;
+import com.openxc.measurements.VehicleButtonEvent;
+import com.openxc.measurements.VehicleDoorStatus;
+import com.openxc.measurements.VehicleSpeed;
 import com.openxc.measurements.WindshieldWiperStatus;
 import com.openxc.remote.VehicleServiceException;
 
@@ -69,6 +69,8 @@ public class VehicleDashboardActivity extends Activity {
     private TextView mWiperStatusView;
     private TextView mHeadlampStatusView;
     StringBuffer mBuffer;
+    
+    //private ImageView mfocusdashboard;
 
     WindshieldWiperStatus.Listener mWiperListener =
             new WindshieldWiperStatus.Listener() {
@@ -401,6 +403,8 @@ public class VehicleDashboardActivity extends Activity {
         setContentView(R.layout.main);
         Log.i(TAG, "Vehicle dashboard created");
 
+        //mfocusdashboard = (ImageView) findViewById(R.id.focusdashboard);
+        
         mSteeringWheelAngleView = (TextView) findViewById(
                 R.id.steering_wheel_angle);
         mVehicleSpeedView = (TextView) findViewById(
