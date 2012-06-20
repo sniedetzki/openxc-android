@@ -12,7 +12,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.openxc.VehicleManager;
