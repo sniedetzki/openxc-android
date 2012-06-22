@@ -1,22 +1,15 @@
 package com.openxc.enabler;
 
 import java.net.URI;
-import java.net.URISyntaxException;
-
 import java.util.List;
 
-import android.os.Bundle;
-
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
-
-import android.preference.PreferenceManager;
+import android.os.Bundle;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
-
-import android.widget.Toast;
-
+import android.preference.PreferenceManager;
 import android.util.Log;
+import android.widget.Toast;
 
 public class SettingsActivity extends PreferenceActivity {
     private static String TAG = "SettingsActivity";
@@ -90,6 +83,9 @@ public class SettingsActivity extends PreferenceActivity {
                             e);
                 }
             }
-        }
+            
+            
     }
+  }
 }
+
