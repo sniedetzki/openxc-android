@@ -1,6 +1,5 @@
 package com.openxc;
 
-import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,6 +7,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+
+import com.openxc.sinks.DataSinkException;
 
 import android.app.Service;
 import android.content.ComponentName;
@@ -90,7 +91,6 @@ public class VehicleManager extends Service implements SourceCallback {
     public final static String VEHICLE_LOCATION_PROVIDER =
             MockedLocationSink.VEHICLE_LOCATION_PROVIDER;
     private final static String TAG = "VehicleManager";
-    public static String recordingPath = null;
     private boolean mIsBound;
     private Lock mRemoteBoundLock;
     private Condition mRemoteBoundCondition;
@@ -413,7 +413,7 @@ public class VehicleManager extends Service implements SourceCallback {
      * VehicleManager:
      *
      *      service.addSink(new FileRecorderSink(
-     *              new AndroidFileOpener(this)));
+     *              new AndroidFileOpener("openxc", this)));
      *
      * @param sink an instance of a VehicleDataSink
      */
@@ -449,26 +449,19 @@ public class VehicleManager extends Service implements SourceCallback {
         if(enabled) {
             SharedPreferences preferences =
                 PreferenceManager.getDefaultSharedPreferences(this);
-            String uploadingPath = preferences.getString(
+            String path = preferences.getString(
                     getString(R.string.uploading_path_key), null);
-            if(uploadingPath == null) {
-                Log.w(TAG, "No uploading path set, not enabling recording. " +
-                        "Value is " + uploadingPath );
-                return;
-            }
-            try {
-                URI uri = new URI(uploadingPath);
-                if(uri.isAbsolute()) {
-                    mUploader = mPipeline.addSink(new UploaderSink(this, uri));
-                } else {
-                    Log.w(TAG, "No target URL set or invalid in preferences " +
-                        "-- not starting uploading a trace");
+            String error = "Target URL in preferences not valid " +
+                    "-- not starting uploading a trace";
+            if(!UploaderSink.validatePath(path)) {
+                Log.w(TAG, error);
+            } else {
+                try {
+                    mUploader = mPipeline.addSink(new UploaderSink(this, path));
+                } catch(java.net.URISyntaxException e) {
+                    Log.w(TAG, error, e);
                 }
-            } catch(java.net.URISyntaxException e) {
-                Log.w(TAG, "Target URL in preferences not valid " +
-                    "-- not starting uploading a trace", e);
             }
-
         } else {
             mPipeline.removeSink(mUploader);
         }
@@ -479,34 +472,29 @@ public class VehicleManager extends Service implements SourceCallback {
      *
      * @param enabled true if recording should be enabled
      * @throws VehicleServiceException if the listener is unable to be
-     *      unregistered with the library internals - an exceptional situation
-     *      that shouldn't occur.
+     *      unregistered with the library internals - an exceptional
+     *      situation that shouldn't occur.
      */
     public void enableRecording(boolean enabled)
             throws VehicleServiceException {
         Log.i(TAG, "Setting recording to " + enabled);
         if(enabled) {
-        	
-        	SharedPreferences preferences =
-                    PreferenceManager.getDefaultSharedPreferences(this);
-        	
-        	recordingPath = preferences.getString(
-                    getString(R.string.recording_path_key), null);
-        	if(recordingPath == null) {
-    			Log.w(TAG, "No recording path set, not enabling recording." +
-   				 "Value is " + recordingPath );
-        	}
-    			mFileRecorder = mPipeline.addSink(
-                    new FileRecorderSink(new AndroidFileOpener(this)));
+            SharedPreferences preferences =
+                PreferenceManager.getDefaultSharedPreferences(this);
+
+            String directory = preferences.getString(
+                    getString(R.string.recording_directory_key), null);
+            try {
+                mFileRecorder = mPipeline.addSink(new FileRecorderSink(
+                            new AndroidFileOpener(this, directory)));
+            } catch(DataSinkException e) {
+                Log.w(TAG, "Unable to start trace recording", e);
+            }
         }
-             else {
+        else {
             mPipeline.removeSink(mFileRecorder);
-            
-               }
         }
-    
-    
-   
+    }
 
     /**
      * Enable or disable reading GPS from the native Android stack.
@@ -681,9 +669,9 @@ public class VehicleManager extends Service implements SourceCallback {
             } else if(key.equals(getString(R.string.uploading_checkbox_key))) {
                 setUploadingStatus();
             } else if(key.equals(getString(R.string.recording_checkbox_key))) {
-            	setRecordingStatus();
+                setRecordingStatus();
             }
-           
+
         }
     }
 }
