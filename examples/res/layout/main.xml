@@ -1,215 +1,434 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+<!--Linear layouts are nested within one another inside a scrollview layout.  Three 
+vertical linear layouts are nested inside a horizontal linear layout inside another vertical 
+linear layout.  This yields a grid-like appearance for the data while leaving more flexibility
+than a GridView layout would provide.  This allows for the use of an image stacked above the 
+grid, which would have required the use of an additional relative layout.-->
+
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/ScrollView01"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:fillViewport="true" >
+    android:fillViewport="true">
 
-    
-    
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical" >
-        
-        <ImageView
-            android:id="@+id/focusdashboard"
+	<LinearLayout
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+    								
+    	<ImageView
+        	android:id="@+id/focusdashboard"
  			android:contentDescription="@drawable/focusdashboard"
-            android:src="@drawable/focusdashboard"
+        	android:src="@drawable/focusdashboard"
         	android:layout_width="wrap_content"
         	android:layout_height="wrap_content"
-        	android:layout_gravity="center"
-        	/>
-
-        <TextView
-            android:id="@+id/steering_wheel_angle_label"
-            style="@style/DefaultFont"
-            android:text="@string/steering_wheel_angle_label" />
-
-        <TextView
-            android:id="@+id/steering_wheel_angle"
-            style="@style/RedFont" />
-
-        <TextView
-            android:id="@+id/vehicle_speed_label"
-            style="@style/DefaultFont"
-            android:text="@string/vehicle_speed_label" />
-
-        <TextView
-            android:id="@+id/vehicle_speed"
-            style="@style/RedFont" />
-
-        <TextView
-            android:id="@+id/fuel_consumed_label"
-            style="@style/DefaultFont"
-            android:text="@string/fuel_consumed_label" />
-
-        <TextView
-            android:id="@+id/fuel_consumed"
-            style="@style/RedFont" />
-
-        <TextView
-            android:id="@+id/fuel_level_label"
-            style="@style/DefaultFont"
-            android:text="@string/fuel_level_label" />
-
-        <TextView
-            android:id="@+id/fuel_level"
-            style="@style/RedFont" />
-
-        <TextView
-            android:id="@+id/odometer_label"
-            style="@style/DefaultFont"
-            android:text="@string/odometer_label" />
-
-        <TextView
-            android:id="@+id/odometer"
-            style="@style/RedFont" />
-
-        <TextView
-            android:id="@+id/fine_odometer_label"
-            style="@style/DefaultFont"
-            android:text="@string/fine_odometer_label" />
-
-        <TextView
-            android:id="@+id/fine_odometer"
-            style="@style/RedFont" />
-
-        <TextView
-            android:id="@+id/wiper_status_label"
-            style="@style/DefaultFont"
-            android:text="@string/wiper_status_label" />
-
-        <TextView
-            android:id="@+id/wiper_status"
-            style="@style/RedFont" />
-
-        <TextView
-            android:id="@+id/brake_pedal_status_label"
-            style="@style/DefaultFont"
-            android:text="@string/brake_pedal_status_label" />
-
-        <TextView
-            android:id="@+id/brake_pedal_status"
-            style="@style/RedFont" />
-
-        <TextView
-            android:id="@+id/parking_brake_status_label"
-            style="@style/DefaultFont"
-            android:text="@string/parking_brake_status_label" />
-
-        <TextView
-            android:id="@+id/parking_brake_status"
-            style="@style/RedFont" />
-
-        <TextView
-            android:id="@+id/headlamp_status_label"
-            style="@style/DefaultFont"
-            android:text="@string/headlamp_status_label" />
-
-        <TextView
-            android:id="@+id/headlamp_status"
-            style="@style/RedFont" />
-
-        <TextView
-            android:id="@+id/engine_speed_label"
-            style="@style/DefaultFont"
-            android:text="@string/engine_speed_label" />
-
-        <TextView
-            android:id="@+id/engine_speed"
-            style="@style/RedFont" />
-
-        <TextView
-            android:id="@+id/torque_at_transmission_label"
-            style="@style/DefaultFont"
-            android:text="@string/torque_at_transmission_label" />
-
-        <TextView
-            android:id="@+id/torque_at_transmission"
-            style="@style/RedFont" />
-
-        <TextView
-            android:id="@+id/accelerator_pedal_position_label"
-            style="@style/DefaultFont"
-            android:text="@string/accelerator_pedal_position_label" />
-
-        <TextView
-            android:id="@+id/accelerator_pedal_position"
-            style="@style/RedFont" />
-
-        <TextView
-            android:id="@+id/transmission_gear_pos_label"
-            style="@style/DefaultFont"
-            android:text="@string/transmission_gear_pos_label" />
-
-        <TextView
-            android:id="@+id/transmission_gear_pos"
-            style="@style/RedFont" />
-
-        <TextView
-            android:id="@+id/ignition_label"
-            style="@style/DefaultFont"
-            android:text="@string/ignition_label" />
-
-        <TextView
-            android:id="@+id/ignition"
-            style="@style/RedFont" />
-
-        <TextView
-            android:id="@+id/latitude_label"
-            style="@style/DefaultFont"
-            android:text="@string/latitude_label" />
-
-        <TextView
-            android:id="@+id/latitude"
-            style="@style/RedFont" />
-
-        <TextView
-            android:id="@+id/longitude_label"
-            style="@style/DefaultFont"
-            android:text="@string/longitude_label" />
-
-        <TextView
-            android:id="@+id/longitude"
-            style="@style/RedFont" />
-
-        <TextView
-            android:id="@+id/android_latitude_label"
-            style="@style/DefaultFont"
-            android:text="@string/android_latitude_label" />
-
-        <TextView
-            android:id="@+id/android_latitude"
-            style="@style/RedFont" />
-
-        <TextView
-            android:id="@+id/android_longitude_label"
-            style="@style/DefaultFont"
-            android:text="@string/android_longitude_label" />
-
-        <TextView
-            android:id="@+id/android_longitude"
-            style="@style/RedFont" />
-
-        <TextView
-            android:id="@+id/button_event_label"
-            style="@style/DefaultFont"
-            android:text="@string/button_event_label" />
-
-        <TextView
-            android:id="@+id/button_event"
-            style="@style/RedFont" />
-
-        <TextView
-            android:id="@+id/door_status_label"
-            style="@style/DefaultFont"
-            android:text="@string/door_status_label" />
-
-        <TextView
-            android:id="@+id/door_status"
-            style="@style/RedFont" />
+        	android:layout_gravity="center"/>
+    
+  		<LinearLayout
+    		android:baselineAligned="false"
+    		android:layout_width="fill_parent"
+    		android:layout_height="wrap_content"
+    		android:orientation="horizontal"
+    		android:gravity="center_horizontal">
         
-    </LinearLayout>
+  		    <View 
+            	android:layout_width="2dp"
+            	android:layout_height="fill_parent"
+            	android:background="@color/VividBlue"/>
+  		    
+			<LinearLayout   
+				android:layout_width="wrap_content"
+        		android:layout_height="wrap_content"
+        		android:orientation="vertical"
+        		android:gravity="center_horizontal"
+        		android:layout_weight="1">
+       			
+       			<View 
+            		android:layout_width="fill_parent"
+            		android:layout_height="2dp"
+            		android:background="@color/VividBlue"/>
+        
+        		<TextView
+            		android:id="@+id/steering_wheel_angle_label"
+            		style="@style/DefaultFont"
+            		android:text="@string/steering_wheel_angle_label"
+            		android:background="@color/Red"/>
 
+        		<TextView
+            		android:id="@+id/steering_wheel_angle"
+            		style="@style/BlackFont"
+            		android:background="@color/Red"/>
+        			
+         		<View 
+            		android:layout_width="fill_parent"
+            		android:layout_height="2dp"
+            		android:background="@color/VividBlue"/>
+        
+        		<TextView
+            		android:id="@+id/vehicle_speed_label"
+            		style="@style/DefaultFont"
+            		android:text="@string/vehicle_speed_label"
+            		android:background="@color/Orange"/>
+
+        		<TextView
+            		android:id="@+id/vehicle_speed"
+            		style="@style/BlackFont"
+            		android:background="@color/Orange"/>
+            		
+        		<View 
+            		android:layout_width="fill_parent"
+            		android:layout_height="2dp"
+            		android:background="@color/VividBlue"/>
+
+        		<TextView
+            		android:id="@+id/fuel_consumed_label"
+            		style="@style/DefaultFont"
+            		android:text="@string/fuel_consumed_label"
+            		android:background="@color/Green"/>
+
+        		<TextView
+            		android:id="@+id/fuel_consumed"
+            		style="@style/BlackFont"
+            		android:background="@color/Green"/>
+            		
+        		<View 
+            		android:layout_width="fill_parent"
+            		android:layout_height="2dp"
+            		android:background="@color/VividBlue"/>
+
+        		<TextView
+            		android:id="@+id/fuel_level_label"
+            		style="@style/DefaultFont"
+            		android:text="@string/fuel_level_label"
+            		android:background="@color/Red"/>
+
+        		<TextView
+            		android:id="@+id/fuel_level"
+            		style="@style/BlackFont"
+            		android:background="@color/Red"/>
+            		
+        		<View 
+            		android:layout_width="fill_parent"
+            		android:layout_height="2dp"
+            		android:background="@color/VividBlue"/>
+
+        		<TextView
+            		android:id="@+id/odometer_label"
+            		style="@style/DefaultFont"
+            		android:text="@string/odometer_label"
+            		android:background="@color/LightBlue"/>
+
+        		<TextView
+            		android:id="@+id/odometer"
+            		style="@style/BlackFont"
+            		android:background="@color/LightBlue"/>
+            		
+        		<View 
+            		android:layout_width="fill_parent"
+            		android:layout_height="2dp"
+            		android:background="@color/VividBlue"/>
+
+        		<TextView
+            		android:id="@+id/fine_odometer_label"
+            		style="@style/DefaultFont"
+            		android:text="@string/fine_odometer_label"
+            		android:background="@color/DarkGreen"/>
+
+        		<TextView
+            		android:id="@+id/fine_odometer"
+            		style="@style/BlackFont"
+            		android:background="@color/DarkGreen"/>
+            		
+        		<View 
+            		android:layout_width="fill_parent"
+            		android:layout_height="2dp"
+            		android:background="@color/VividBlue"/>
+
+        		<TextView
+            		android:id="@+id/wiper_status_label"
+            		style="@style/ExtraSpacingDefaultFont"
+            		android:text="@string/wiper_status_label"
+            		android:background="@color/Purple"/>
+
+        		<TextView
+            		android:id="@+id/wiper_status"
+            		style="@style/LessSpacingBlackFont"
+            		android:background="@color/Purple"/>
+        		
+        		<View 
+            		android:layout_width="fill_parent"
+            		android:layout_height="2dp"
+            		android:background="@color/VividBlue"/>
+            		
+			</LinearLayout>
+        
+			<View 
+            	android:layout_width="2dp"
+            	android:layout_height="fill_parent"
+            	android:background="@color/VividBlue"/>
+			
+			<LinearLayout   
+				android:layout_width="wrap_content"
+        		android:layout_height="wrap_content"
+        		android:orientation="vertical"
+        		android:gravity="center"
+        		android:layout_weight="1">
+        
+        		<View 
+            		android:layout_width="fill_parent"
+            		android:layout_height="2dp"
+            		android:background="@color/VividBlue"/>
+        
+        		<TextView
+            		android:id="@+id/brake_pedal_status_label"
+            		style="@style/DefaultFont"
+            		android:text="@string/brake_pedal_status_label"
+            		android:background="@color/Green"/>
+
+        		<TextView
+            		android:id="@+id/brake_pedal_status"
+            		style="@style/BlackFont"
+            		android:background="@color/Green"/>
+            		
+        		<View 
+           			android:layout_width="fill_parent"
+            		android:layout_height="2dp"
+            		android:background="@color/VividBlue"/>
+
+        		<TextView
+            		android:id="@+id/parking_brake_status_label"
+            		style="@style/DefaultFont"
+            		android:text="@string/parking_brake_status_label"
+            		android:background="@color/LightBlue"/>
+
+        		<TextView
+            		android:id="@+id/parking_brake_status"
+            		style="@style/BlackFont"
+            		android:background="@color/LightBlue"/>
+            		
+        		<View 
+            		android:layout_width="fill_parent"
+            		android:layout_height="2dp"
+            		android:background="@color/VividBlue"/>
+
+        		<TextView
+            		android:id="@+id/headlamp_status_label"
+            		style="@style/DefaultFont"
+            		android:text="@string/headlamp_status_label"
+            		android:background="@color/Purple"/>
+
+        		<TextView
+            		android:id="@+id/headlamp_status"
+            		style="@style/BlackFont"
+            		android:background="@color/Purple"/>
+            		
+        		<View 
+            		android:layout_width="fill_parent"
+            		android:layout_height="2dp"
+            		android:background="@color/VividBlue"/>
+
+        		<TextView
+            		android:id="@+id/engine_speed_label"
+            		style="@style/DefaultFont"
+            		android:text="@string/engine_speed_label"
+            		android:background="@color/Orange"/>
+
+        		<TextView
+            		android:id="@+id/engine_speed"
+            		style="@style/BlackFont"
+            		android:background="@color/Orange"/>
+            		
+        		<View 
+            		android:layout_width="fill_parent"
+            		android:layout_height="2dp"
+            		android:background="@color/VividBlue"/>
+
+        		<TextView
+            		android:id="@+id/torque_at_transmission_label"
+            		style="@style/DefaultFont"
+            		android:text="@string/torque_at_transmission_label"
+            		android:background="@color/DarkPurple"/>
+
+        		<TextView
+            		android:id="@+id/torque_at_transmission"
+            		style="@style/BlackFont"
+            		android:background="@color/DarkPurple"/>
+            		
+        		<View 
+            		android:layout_width="fill_parent"
+            		android:layout_height="2dp"
+            		android:background="@color/VividBlue"/>
+
+        		<TextView
+            		android:id="@+id/accelerator_pedal_position_label"
+            		style="@style/ExtraSpacingDefaultFont"
+            		android:text="@string/accelerator_pedal_position_label"
+            		android:background="@color/Orange"/>
+
+        		<TextView
+            		android:id="@+id/accelerator_pedal_position"
+            		style="@style/LessSpacingBlackFont"
+            		android:background="@color/Orange"/>
+            		
+        		<View 
+            		android:layout_width="fill_parent"
+            		android:layout_height="2dp"
+            		android:background="@color/VividBlue"/>
+
+        		<TextView
+            		android:id="@+id/transmission_gear_pos_label"
+            		style="@style/ExtraSpacingDefaultFont"
+            		android:text="@string/transmission_gear_pos_label"
+            		android:background="@color/LightBlue"/>
+
+        		<TextView
+            		android:id="@+id/transmission_gear_pos"
+            		style="@style/LessSpacingBlackFont"
+            		android:background="@color/LightBlue"/>
+        		
+        		<View 
+            		android:layout_width="fill_parent"
+            		android:layout_height="2dp"
+            		android:background="@color/VividBlue"/>
+            		
+			</LinearLayout>
+        
+			<View 
+            	android:layout_width="2dp"
+            	android:layout_height="fill_parent"
+           		android:background="@color/VividBlue"/>
+           
+			<LinearLayout   
+				android:layout_width="wrap_content"
+        		android:layout_height="wrap_content"
+        		android:orientation="vertical"
+        		android:gravity="center"
+        		android:layout_weight="1">
+        
+        		<View 
+            		android:layout_width="fill_parent"
+            		android:layout_height="2dp"
+            		android:background="@color/VividBlue"/>
+        		
+        		<TextView
+            		android:id="@+id/ignition_label"
+            		style="@style/DefaultFont"
+            		android:text="@string/ignition_label"
+            		android:background="@color/DarkPurple"/>
+
+        		<TextView
+            		android:id="@+id/ignition"
+            		style="@style/BlackFont"
+            		android:background="@color/DarkPurple"/>
+            		
+        		<View 
+            		android:layout_width="fill_parent"
+            		android:layout_height="2dp"
+            		android:background="@color/VividBlue"/>
+
+        		<TextView
+            		android:id="@+id/latitude_label"
+            		style="@style/DefaultFont"
+            		android:text="@string/latitude_label"
+            		android:background="@color/Orange"/>
+
+        		<TextView
+            		android:id="@+id/latitude"
+            		style="@style/BlackFont"
+            		android:background="@color/Orange"/>
+            		
+        		<View 
+            		android:layout_width="fill_parent"
+            		android:layout_height="2dp"
+            		android:background="@color/VividBlue"/>
+
+        		<TextView
+            		android:id="@+id/longitude_label"
+            		style="@style/DefaultFont"
+            		android:text="@string/longitude_label"
+            		android:background="@color/Red"/>
+
+        		<TextView
+            		android:id="@+id/longitude"
+            		style="@style/BlackFont"
+            		android:background="@color/Red"/>
+            		
+        
+        		<View 
+            		android:layout_width="fill_parent"
+            		android:layout_height="2dp"
+            		android:background="@color/VividBlue"/>
+
+        		<TextView
+            		android:id="@+id/android_latitude_label"
+            		style="@style/DefaultFont"
+            		android:text="@string/android_latitude_label"
+            		android:background="@color/DarkGreen"/>
+
+        		<TextView
+            		android:id="@+id/android_latitude"
+            		style="@style/BlackFont"
+            		android:background="@color/DarkGreen"/>
+            		
+        		<View 
+            		android:layout_width="fill_parent"
+            		android:layout_height="2dp"
+            		android:background="@color/VividBlue"/>
+
+        		<TextView
+            		android:id="@+id/android_longitude_label"
+            		style="@style/DefaultFont"
+            		android:text="@string/android_longitude_label"
+            		android:background="@color/NavyBlue"/>
+
+        		<TextView
+            		android:id="@+id/android_longitude"
+            		style="@style/BlackFont"
+            		android:background="@color/NavyBlue"/>
+            		
+        		<View 
+            		android:layout_width="fill_parent"
+            		android:layout_height="2dp"
+            		android:background="@color/VividBlue"/>
+        
+        		<TextView
+            		android:id="@+id/door_status_label"
+            		style="@style/DefaultFont"
+            		android:text="@string/door_status_label"
+            		android:background="@color/Red"/>
+ 
+         		<TextView
+            		android:id="@+id/door_status"
+            		style="@style/BlackFont"
+            		android:background="@color/Red"/>
+            		
+         		<View 
+            		android:layout_width="fill_parent"
+            		android:layout_height="2dp"
+            		android:background="@color/VividBlue"/>
+       			
+       			<TextView
+            		android:id="@+id/button_event_label"
+            		style="@style/DefaultFont"
+            		android:text="@string/button_event_label"/>
+         		
+         		<TextView
+            		android:id="@+id/button_event"
+            		style="@style/OrangeFont"/>
+         		
+         		<View 
+            		android:layout_width="fill_parent"
+            		android:layout_height="2dp"
+            		android:background="@color/VividBlue"/>
+         		
+			</LinearLayout>
+			
+			<View 
+            	android:layout_width="2dp"
+            	android:layout_height="fill_parent"
+            	android:background="@color/VividBlue"/>
+			
+    	</LinearLayout>
+	</LinearLayout>
 </ScrollView>
