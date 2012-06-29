@@ -1,14 +1,11 @@
 package com.openxc;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-
-import com.openxc.sinks.DataSinkException;
 
 import android.app.Service;
 import android.content.ComponentName;
@@ -49,6 +46,7 @@ import com.openxc.measurements.WindshieldWiperStatus;
 import com.openxc.remote.RawMeasurement;
 import com.openxc.remote.VehicleServiceException;
 import com.openxc.remote.VehicleServiceInterface;
+import com.openxc.sinks.DataSinkException;
 import com.openxc.sinks.FileRecorderSink;
 import com.openxc.sinks.MeasurementListenerSink;
 import com.openxc.sinks.MockedLocationSink;

@@ -68,8 +68,7 @@ public class VehicleDashboardActivity extends Activity {
     private TextView mWiperStatusView;
     private TextView mHeadlampStatusView;
     StringBuffer mBuffer;
-    
-    //private ImageView mfocusdashboard;
+  
 
     WindshieldWiperStatus.Listener mWiperListener =
             new WindshieldWiperStatus.Listener() {
@@ -78,8 +77,8 @@ public class VehicleDashboardActivity extends Activity {
                 (WindshieldWiperStatus) measurement;
             mHandler.post(new Runnable() {
                 public void run() {
-                    mWiperStatusView.setText("" +
-                        wiperStatus.getValue().booleanValue());
+                	mWiperStatusView.setText(
+                		"" + wiperStatus.getValue().booleanValue());
                 }
             });
         }
@@ -402,7 +401,7 @@ public class VehicleDashboardActivity extends Activity {
         setContentView(R.layout.main);
         Log.i(TAG, "Vehicle dashboard created");
 
-        //mfocusdashboard = (ImageView) findViewById(R.id.focusdashboard);
+       
         
         mSteeringWheelAngleView = (TextView) findViewById(
                 R.id.steering_wheel_angle);
