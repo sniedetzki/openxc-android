@@ -4,7 +4,9 @@
 vertical linear layouts are nested inside a horizontal linear layout inside another vertical 
 linear layout.  This yields a grid-like appearance for the data while leaving more flexibility
 than a GridView layout would provide.  This allows for the use of an image stacked above the 
-grid, which would have required the use of an additional relative layout.-->
+grid, which would have required the use of an additional relative layout.  
+Note:  In order for this work, the android:layout_height must be a constant as opposed to 
+fill_parent, wrap_content, etc. -->
 
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/ScrollView01"

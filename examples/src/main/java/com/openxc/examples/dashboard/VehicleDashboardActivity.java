@@ -42,7 +42,9 @@ import com.openxc.remote.VehicleServiceException;
 public class VehicleDashboardActivity extends Activity {
 
     private static String TAG = "VehicleDashboard";
-
+    public String ACTION_VEHICLE_STARTED = "com.ford.openxc.VEHICLE_STARTED";
+    public String ACTION_VEHICLE_OFF = "com.ford.openxc.VEHICLE_OFF";
+    
     private VehicleManager mVehicleManager;
     private boolean mIsBound;
     private final Handler mHandler = new Handler();
@@ -68,6 +70,8 @@ public class VehicleDashboardActivity extends Activity {
     private TextView mWiperStatusView;
     private TextView mHeadlampStatusView;
     StringBuffer mBuffer;
+    
+    
   
 
     WindshieldWiperStatus.Listener mWiperListener =
@@ -243,9 +247,22 @@ public class VehicleDashboardActivity extends Activity {
             mHandler.post(new Runnable() {
                 public void run() {
                     mIgnitionStatusView.setText(
-                        "" + status.getValue().enumValue());
+                        "" + status.getValue().enumValue());                    
                 }
             });
+       String IgnitionStatusToString = status.getValue().enumValue().toString();  
+       		if (IgnitionStatusToString == "OFF" || IgnitionStatusToString == "START"){
+            	if (IgnitionStatusToString == "OFF") {
+        			Intent broadcastIntent = new Intent(ACTION_VEHICLE_OFF);
+                    sendBroadcast(broadcastIntent);
+                    Log.i(TAG, "Vehicle OFF Broadcast Intent Sent");
+        		}
+        		else if (IgnitionStatusToString == "START"){
+        			Intent broadcastIntent = new Intent(ACTION_VEHICLE_STARTED);
+                    sendBroadcast(broadcastIntent);
+                    Log.i(TAG, "Vehicle STARTED Broadcast Intent Sent");
+        		}
+       		}
         }
     };
 
