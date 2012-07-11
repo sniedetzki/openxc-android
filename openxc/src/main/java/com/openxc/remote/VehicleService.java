@@ -2,13 +2,12 @@ package com.openxc.remote;
 
 import com.openxc.DataPipeline;
 
-import com.openxc.measurements.UnrecognizedMeasurementTypeException;
-
 import com.openxc.remote.VehicleServiceListener;
 
 import com.openxc.sinks.MockedLocationSink;
 import com.openxc.sinks.RemoteCallbackSink;
 import com.openxc.sources.ApplicationSource;
+
 import com.openxc.sources.DataSourceException;
 import com.openxc.sources.usb.UsbVehicleDataSource;
 import android.app.Service;
@@ -17,14 +16,10 @@ import android.content.Context;
 import android.content.Intent;
 
 import android.os.IBinder;
-import android.os.RemoteException;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
 
 import com.openxc.controllers.VehicleController;
-
-import com.openxc.measurements.Measurement;
-import com.openxc.measurements.BaseMeasurement;
 
 import android.util.Log;
 
