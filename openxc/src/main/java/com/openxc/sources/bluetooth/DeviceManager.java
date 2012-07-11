@@ -2,6 +2,8 @@ package com.openxc.sources.bluetooth;
 
 import java.io.IOException;
 
+import java.lang.reflect.Method;
+
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -89,10 +91,13 @@ public class DeviceManager {
 
         Log.d(TAG, "Scanning services on " + device);
         BluetoothSocket socket = null;
+        // TODO why do we have to use this private method to get a reliable
+        // socket?
         try {
-            socket = device.createRfcommSocketToServiceRecord(
-                    RFCOMM_UUID);
-        } catch(IOException e) {
+            Method m = device.getClass().getMethod("createRfcommSocket",
+                   new Class[] { int.class });
+            socket = (BluetoothSocket) m.invoke(device, 1);
+        } catch(Exception e) {
             String error = "Unable to open a socket to device " + device;
             Log.w(TAG, error);
             throw new BluetoothException(error, e);
@@ -149,26 +154,5 @@ public class DeviceManager {
                 return;
             }
         }
-
-        mReceiver = new BroadcastReceiver() {
-            public void onReceive(Context context, Intent intent) {
-                if(BluetoothDevice.ACTION_FOUND.equals(intent.getAction())) {
-                    BluetoothDevice device = intent.getParcelableExtra(
-                            BluetoothDevice.EXTRA_DEVICE);
-                    if (device.getBondState() != BluetoothDevice.BOND_BONDED
-                            && deviceDiscovered(device, targetAddress)) {
-                        captureDevice(device);
-                    }
-                }
-            }
-        };
-
-        IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-        mContext.registerReceiver(mReceiver, filter);
-
-        if(mBluetoothAdapter.isDiscovering()) {
-            mBluetoothAdapter.cancelDiscovery();
-        }
-        mBluetoothAdapter.startDiscovery();
     }
 }
