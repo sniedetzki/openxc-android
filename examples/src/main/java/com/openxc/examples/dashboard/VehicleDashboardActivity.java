@@ -5,7 +5,10 @@ import org.apache.commons.io.FileUtils;
 import java.net.URISyntaxException;
 import java.net.URI;
 import java.io.IOException;
-import com.openxc.remote.sources.trace.TraceVehicleDataSource;
+
+import com.openxc.sources.DataSourceException;
+
+import com.openxc.sources.trace.TraceVehicleDataSource;
 
 import android.app.Activity;
 import android.content.ComponentName;
@@ -349,9 +352,13 @@ public class VehicleDashboardActivity extends Activity {
                     ).getService();
 
             try {
-                mVehicleManager.setDataSource(
-                        TraceVehicleDataSource.class.getName(),
-                        traceUri.toString());
+                try {
+                    mVehicleManager.addSource(new TraceVehicleDataSource(
+                                VehicleDashboardActivity.this,
+                                traceUri));
+                } catch(DataSourceException e) {
+                    Log.w(TAG, "Unable to set trace data source", e);
+                }
                 mVehicleManager.addListener(SteeringWheelAngle.class,
                         mSteeringWheelListener);
                 mVehicleManager.addListener(VehicleSpeed.class,
