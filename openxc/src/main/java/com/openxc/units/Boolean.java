@@ -7,7 +7,7 @@ import com.google.common.base.Objects;
  *
  * This class handles converting to a boolean from numerical measurements.
  */
-public class Boolean implements Unit {
+public class Boolean extends Unit {
     private boolean mValue;
 
     /**
@@ -24,12 +24,16 @@ public class Boolean implements Unit {
      *
      * @param value If the value == 1, the constructed object will be true.
      */
-    public Boolean(Double value) {
-        mValue = value == 1;
+    public Boolean(Number value) {
+        mValue = value.intValue() == 1;
     }
 
     public boolean booleanValue() {
         return mValue;
+    }
+
+    public java.lang.Boolean getSerializedValue() {
+        return new java.lang.Boolean(booleanValue());
     }
 
     @Override
@@ -37,5 +41,15 @@ public class Boolean implements Unit {
         return Objects.toStringHelper(this)
             .add("value", booleanValue())
             .toString();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(!super.equals(obj)) {
+            return false;
+        }
+
+        final Boolean other = (Boolean) obj;
+        return mValue == other.mValue;
     }
 }

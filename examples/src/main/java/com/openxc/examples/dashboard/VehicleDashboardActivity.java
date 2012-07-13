@@ -22,12 +22,12 @@ import android.os.IBinder;
 import android.util.Log;
 import android.widget.TextView;
 
-import com.openxc.VehicleService;
+import com.openxc.VehicleManager;
 import com.openxc.examples.R;
 import com.openxc.measurements.BrakePedalStatus;
 import com.openxc.measurements.HeadlampStatus;
 import com.openxc.measurements.EngineSpeed;
-import com.openxc.measurements.PowertrainTorque;
+import com.openxc.measurements.TorqueAtTransmission;
 import com.openxc.measurements.AcceleratorPedalPosition;
 import com.openxc.measurements.Latitude;
 import com.openxc.measurements.Longitude;
@@ -38,20 +38,20 @@ import com.openxc.measurements.TransmissionGearPosition;
 import com.openxc.measurements.UnrecognizedMeasurementTypeException;
 import com.openxc.measurements.VehicleDoorStatus;
 import com.openxc.measurements.VehicleButtonEvent;
-import com.openxc.measurements.VehicleMeasurement;
+import com.openxc.measurements.Measurement;
 import com.openxc.measurements.VehicleSpeed;
 import com.openxc.measurements.FuelConsumed;
 import com.openxc.measurements.FuelLevel;
 import com.openxc.measurements.Odometer;
 import com.openxc.measurements.FineOdometer;
 import com.openxc.measurements.WindshieldWiperStatus;
-import com.openxc.remote.RemoteVehicleServiceException;
+import com.openxc.remote.VehicleServiceException;
 
 public class VehicleDashboardActivity extends Activity {
 
     private static String TAG = "VehicleDashboard";
 
-    private VehicleService mVehicleService;
+    private VehicleManager mVehicleManager;
     private boolean mIsBound;
     private final Handler mHandler = new Handler();
     private TextView mSteeringWheelAngleView;
@@ -63,7 +63,7 @@ public class VehicleDashboardActivity extends Activity {
     private TextView mVehicleBrakeStatusView;
     private TextView mParkingBrakeStatusView;
     private TextView mVehicleEngineSpeedView;
-    private TextView mPowertrainTorqueView;
+    private TextView mTorqueAtTransmissionView;
     private TextView mAcceleratorPedalPositionView;
     private TextView mTransmissionGearPosView;
     private TextView mIgnitionStatusView;
@@ -80,7 +80,7 @@ public class VehicleDashboardActivity extends Activity {
 
     WindshieldWiperStatus.Listener mWiperListener =
             new WindshieldWiperStatus.Listener() {
-        public void receive(VehicleMeasurement measurement) {
+        public void receive(Measurement measurement) {
             final WindshieldWiperStatus wiperStatus =
                 (WindshieldWiperStatus) measurement;
             mHandler.post(new Runnable() {
@@ -93,7 +93,7 @@ public class VehicleDashboardActivity extends Activity {
     };
 
     VehicleSpeed.Listener mSpeedListener = new VehicleSpeed.Listener() {
-        public void receive(VehicleMeasurement measurement) {
+        public void receive(Measurement measurement) {
             final VehicleSpeed speed = (VehicleSpeed) measurement;
             mHandler.post(new Runnable() {
                 public void run() {
@@ -105,7 +105,7 @@ public class VehicleDashboardActivity extends Activity {
     };
 
     FuelConsumed.Listener mFuelConsumedListener = new FuelConsumed.Listener() {
-        public void receive(VehicleMeasurement measurement) {
+        public void receive(Measurement measurement) {
             final FuelConsumed fuel = (FuelConsumed) measurement;
             mHandler.post(new Runnable() {
                 public void run() {
@@ -117,7 +117,7 @@ public class VehicleDashboardActivity extends Activity {
     };
 
     FuelLevel.Listener mFuelLevelListener = new FuelLevel.Listener() {
-        public void receive(VehicleMeasurement measurement) {
+        public void receive(Measurement measurement) {
             final FuelLevel level = (FuelLevel) measurement;
             mHandler.post(new Runnable() {
                 public void run() {
@@ -129,7 +129,7 @@ public class VehicleDashboardActivity extends Activity {
     };
 
     Odometer.Listener mOdometerListener = new Odometer.Listener() {
-        public void receive(VehicleMeasurement measurement) {
+        public void receive(Measurement measurement) {
             final Odometer odometer = (Odometer) measurement;
             mHandler.post(new Runnable() {
                 public void run() {
@@ -141,7 +141,7 @@ public class VehicleDashboardActivity extends Activity {
     };
 
     FineOdometer.Listener mFineOdometerListener = new FineOdometer.Listener() {
-        public void receive(VehicleMeasurement measurement) {
+        public void receive(Measurement measurement) {
             final FineOdometer odometer = (FineOdometer) measurement;
             mHandler.post(new Runnable() {
                 public void run() {
@@ -154,7 +154,7 @@ public class VehicleDashboardActivity extends Activity {
 
     BrakePedalStatus.Listener mBrakePedalStatus =
             new BrakePedalStatus.Listener() {
-        public void receive(VehicleMeasurement measurement) {
+        public void receive(Measurement measurement) {
             final BrakePedalStatus status = (BrakePedalStatus) measurement;
             mHandler.post(new Runnable() {
                 public void run() {
@@ -167,7 +167,7 @@ public class VehicleDashboardActivity extends Activity {
 
     ParkingBrakeStatus.Listener mParkingBrakeStatus =
             new ParkingBrakeStatus.Listener() {
-    	public void receive(VehicleMeasurement measurement) {
+    	public void receive(Measurement measurement) {
 	    final ParkingBrakeStatus status = (ParkingBrakeStatus) measurement;
             mHandler.post(new Runnable() {
                 public void run() {
@@ -179,7 +179,7 @@ public class VehicleDashboardActivity extends Activity {
     };
 
     HeadlampStatus.Listener mHeadlampStatus = new HeadlampStatus.Listener() {
-        public void receive(VehicleMeasurement measurement) {
+        public void receive(Measurement measurement) {
             final HeadlampStatus status = (HeadlampStatus) measurement;
             mHandler.post(new Runnable() {
                 public void run() {
@@ -191,7 +191,7 @@ public class VehicleDashboardActivity extends Activity {
     };
 
     EngineSpeed.Listener mEngineSpeed = new EngineSpeed.Listener() {
-        public void receive(VehicleMeasurement measurement) {
+        public void receive(Measurement measurement) {
             final EngineSpeed status = (EngineSpeed) measurement;
             mHandler.post(new Runnable() {
                 public void run() {
@@ -202,13 +202,13 @@ public class VehicleDashboardActivity extends Activity {
         }
     };
 
-    PowertrainTorque.Listener mPowertrainTorque =
-            new PowertrainTorque.Listener() {
-        public void receive(VehicleMeasurement measurement) {
-            final PowertrainTorque status = (PowertrainTorque) measurement;
+    TorqueAtTransmission.Listener mTorqueAtTransmission =
+            new TorqueAtTransmission.Listener() {
+        public void receive(Measurement measurement) {
+            final TorqueAtTransmission status = (TorqueAtTransmission) measurement;
             mHandler.post(new Runnable() {
                 public void run() {
-                    mPowertrainTorqueView.setText(
+                    mTorqueAtTransmissionView.setText(
                         "" + status.getValue().doubleValue());
                 }
             });
@@ -217,7 +217,7 @@ public class VehicleDashboardActivity extends Activity {
 
     AcceleratorPedalPosition.Listener mAcceleratorPedalPosition =
             new AcceleratorPedalPosition.Listener() {
-        public void receive(VehicleMeasurement measurement) {
+        public void receive(Measurement measurement) {
             final AcceleratorPedalPosition status =
                 (AcceleratorPedalPosition) measurement;
             mHandler.post(new Runnable() {
@@ -232,7 +232,7 @@ public class VehicleDashboardActivity extends Activity {
 
     TransmissionGearPosition.Listener mTransmissionGearPos =
             new TransmissionGearPosition.Listener() {
-        public void receive(VehicleMeasurement measurement) {
+        public void receive(Measurement measurement) {
             final TransmissionGearPosition status =
                     (TransmissionGearPosition) measurement;
             mHandler.post(new Runnable() {
@@ -246,7 +246,7 @@ public class VehicleDashboardActivity extends Activity {
 
     IgnitionStatus.Listener mIgnitionStatus =
             new IgnitionStatus.Listener() {
-        public void receive(VehicleMeasurement measurement) {
+        public void receive(Measurement measurement) {
             final IgnitionStatus status = (IgnitionStatus) measurement;
             mHandler.post(new Runnable() {
                 public void run() {
@@ -259,13 +259,13 @@ public class VehicleDashboardActivity extends Activity {
 
     VehicleButtonEvent.Listener mButtonEvent =
             new VehicleButtonEvent.Listener() {
-        public void receive(VehicleMeasurement measurement) {
+        public void receive(Measurement measurement) {
             final VehicleButtonEvent event = (VehicleButtonEvent) measurement;
             mHandler.post(new Runnable() {
                 public void run() {
                     mButtonEventView.setText(
                         event.getValue().enumValue() + " is " +
-                        event.getAction().enumValue());
+                        event.getEvent().enumValue());
                 }
             });
         }
@@ -273,13 +273,13 @@ public class VehicleDashboardActivity extends Activity {
 
     VehicleDoorStatus.Listener mDoorStatus =
             new VehicleDoorStatus.Listener() {
-        public void receive(VehicleMeasurement measurement) {
+        public void receive(Measurement measurement) {
             final VehicleDoorStatus event = (VehicleDoorStatus) measurement;
             mHandler.post(new Runnable() {
                 public void run() {
                     mDoorStatusView.setText(
                         event.getValue().enumValue() + " is ajar: " +
-                        event.getAction().booleanValue());
+                        event.getEvent().booleanValue());
                 }
             });
         }
@@ -287,7 +287,7 @@ public class VehicleDashboardActivity extends Activity {
 
     Latitude.Listener mLatitude =
             new Latitude.Listener() {
-        public void receive(VehicleMeasurement measurement) {
+        public void receive(Measurement measurement) {
             final Latitude lat = (Latitude) measurement;
             mHandler.post(new Runnable() {
                 public void run() {
@@ -300,7 +300,7 @@ public class VehicleDashboardActivity extends Activity {
 
     Longitude.Listener mLongitude =
             new Longitude.Listener() {
-        public void receive(VehicleMeasurement measurement) {
+        public void receive(Measurement measurement) {
             final Longitude lng = (Longitude) measurement;
             mHandler.post(new Runnable() {
                 public void run() {
@@ -313,14 +313,14 @@ public class VehicleDashboardActivity extends Activity {
 
     LocationListener mAndroidLocationListener = new LocationListener() {
         public void onLocationChanged(final Location location) {
-                mHandler.post(new Runnable() {
-                    public void run() {
-                        mAndroidLatitudeView.setText("" +
-                            location.getLatitude());
-                        mAndroidLongitudeView.setText("" +
-                            location.getLongitude());
-                    }
-                });
+            mHandler.post(new Runnable() {
+                public void run() {
+                    mAndroidLatitudeView.setText("" +
+                        location.getLatitude());
+                    mAndroidLongitudeView.setText("" +
+                        location.getLongitude());
+                }
+            });
         }
 
         public void onStatusChanged(String provider, int status, Bundle extras) {}
@@ -330,7 +330,7 @@ public class VehicleDashboardActivity extends Activity {
 
     SteeringWheelAngle.Listener mSteeringWheelListener =
             new SteeringWheelAngle.Listener() {
-        public void receive(VehicleMeasurement measurement) {
+        public void receive(Measurement measurement) {
             final SteeringWheelAngle angle = (SteeringWheelAngle) measurement;
             mHandler.post(new Runnable() {
                 public void run() {
@@ -344,53 +344,53 @@ public class VehicleDashboardActivity extends Activity {
     private ServiceConnection mConnection = new ServiceConnection() {
         public void onServiceConnected(ComponentName className,
                 IBinder service) {
-            Log.i(TAG, "Bound to VehicleService");
-            mVehicleService = ((VehicleService.VehicleServiceBinder)service
+            Log.i(TAG, "Bound to VehicleManager");
+            mVehicleManager = ((VehicleManager.VehicleBinder)service
                     ).getService();
 
             try {
-                mVehicleService.setDataSource(
+                mVehicleManager.setDataSource(
                         TraceVehicleDataSource.class.getName(),
                         traceUri.toString());
-                mVehicleService.addListener(SteeringWheelAngle.class,
+                mVehicleManager.addListener(SteeringWheelAngle.class,
                         mSteeringWheelListener);
-                mVehicleService.addListener(VehicleSpeed.class,
+                mVehicleManager.addListener(VehicleSpeed.class,
                         mSpeedListener);
-                mVehicleService.addListener(FuelConsumed.class,
+                mVehicleManager.addListener(FuelConsumed.class,
                         mFuelConsumedListener);
-                mVehicleService.addListener(FuelLevel.class,
+                mVehicleManager.addListener(FuelLevel.class,
                         mFuelLevelListener);
-                mVehicleService.addListener(Odometer.class,
+                mVehicleManager.addListener(Odometer.class,
                         mOdometerListener);
-                mVehicleService.addListener(FineOdometer.class,
+                mVehicleManager.addListener(FineOdometer.class,
                         mFineOdometerListener);
-                mVehicleService.addListener(WindshieldWiperStatus.class,
+                mVehicleManager.addListener(WindshieldWiperStatus.class,
                         mWiperListener);
-                mVehicleService.addListener(BrakePedalStatus.class,
+                mVehicleManager.addListener(BrakePedalStatus.class,
                         mBrakePedalStatus);
-                mVehicleService.addListener(ParkingBrakeStatus.class,
+                mVehicleManager.addListener(ParkingBrakeStatus.class,
                         mParkingBrakeStatus);
-                mVehicleService.addListener(HeadlampStatus.class,
+                mVehicleManager.addListener(HeadlampStatus.class,
                         mHeadlampStatus);
-                mVehicleService.addListener(EngineSpeed.class,
+                mVehicleManager.addListener(EngineSpeed.class,
                         mEngineSpeed);
-                mVehicleService.addListener(PowertrainTorque.class,
-                        mPowertrainTorque);
-                mVehicleService.addListener(AcceleratorPedalPosition.class,
+                mVehicleManager.addListener(TorqueAtTransmission.class,
+                        mTorqueAtTransmission);
+                mVehicleManager.addListener(AcceleratorPedalPosition.class,
                         mAcceleratorPedalPosition);
-                mVehicleService.addListener(TransmissionGearPosition.class,
+                mVehicleManager.addListener(TransmissionGearPosition.class,
                         mTransmissionGearPos);
-                mVehicleService.addListener(IgnitionStatus.class,
+                mVehicleManager.addListener(IgnitionStatus.class,
                         mIgnitionStatus);
-                mVehicleService.addListener(Latitude.class,
+                mVehicleManager.addListener(Latitude.class,
                         mLatitude);
-                mVehicleService.addListener(Longitude.class,
+                mVehicleManager.addListener(Longitude.class,
                         mLongitude);
-                mVehicleService.addListener(VehicleButtonEvent.class,
+                mVehicleManager.addListener(VehicleButtonEvent.class,
                         mButtonEvent);
-                mVehicleService.addListener(VehicleDoorStatus.class,
+                mVehicleManager.addListener(VehicleDoorStatus.class,
                         mDoorStatus);
-            } catch(RemoteVehicleServiceException e) {
+            } catch(VehicleServiceException e) {
                 Log.w(TAG, "Couldn't add listeners for measurements", e);
             } catch(UnrecognizedMeasurementTypeException e) {
                 Log.w(TAG, "Couldn't add listeners for measurements", e);
@@ -399,8 +399,8 @@ public class VehicleDashboardActivity extends Activity {
         }
 
         public void onServiceDisconnected(ComponentName className) {
-            Log.w(TAG, "RemoteVehicleService disconnected unexpectedly");
-            mVehicleService = null;
+            Log.w(TAG, "VehicleService disconnected unexpectedly");
+            mVehicleManager = null;
             mIsBound = false;
         }
     };
@@ -436,8 +436,8 @@ public class VehicleDashboardActivity extends Activity {
                 R.id.headlamp_status);
         mVehicleEngineSpeedView = (TextView) findViewById(
                 R.id.engine_speed);
-        mPowertrainTorqueView = (TextView) findViewById(
-                R.id.powertrain_torque);
+        mTorqueAtTransmissionView = (TextView) findViewById(
+                R.id.torque_at_transmission);
         mAcceleratorPedalPositionView = (TextView) findViewById(
                 R.id.accelerator_pedal_position);
         mTransmissionGearPosView = (TextView) findViewById(
@@ -476,14 +476,14 @@ public class VehicleDashboardActivity extends Activity {
     @Override
     public void onResume() {
         super.onResume();
-        bindService(new Intent(this, VehicleService.class),
+        bindService(new Intent(this, VehicleManager.class),
                 mConnection, Context.BIND_AUTO_CREATE);
 
         LocationManager locationManager = (LocationManager)
             getSystemService(Context.LOCATION_SERVICE);
         try {
             locationManager.requestLocationUpdates(
-                    VehicleService.VEHICLE_LOCATION_PROVIDER, 0, 0,
+                    VehicleManager.VEHICLE_LOCATION_PROVIDER, 0, 0,
                     mAndroidLocationListener);
         } catch(IllegalArgumentException e) {
             Log.w(TAG, "Vehicle location provider is unavailable");

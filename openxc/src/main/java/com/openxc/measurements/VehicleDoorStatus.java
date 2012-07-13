@@ -2,7 +2,6 @@ package com.openxc.measurements;
 
 import com.openxc.units.State;
 
-import com.openxc.util.AgingData;
 import com.openxc.units.Boolean;
 
 /**
@@ -17,10 +16,7 @@ import com.openxc.units.Boolean;
  * synchronously?
  */
 public class VehicleDoorStatus
-        extends Measurement<State<VehicleDoorStatus.DoorId>>
-        implements VehicleMeasurement {
-    private AgingData<Boolean> mAction;
-
+        extends BaseMeasurement<State<VehicleDoorStatus.DoorId>> {
     public final static String ID = "door_status";
 
     /**
@@ -31,43 +27,38 @@ public class VehicleDoorStatus
         PASSENGER,
         REAR_LEFT,
         REAR_RIGHT,
-        BOOT;
-
-        private final int mHashCode;
-
-        private DoorId() {
-            mHashCode = toString().hashCode();
-        }
-
-        public int getHashCode() {
-            return mHashCode;
-        }
-
-        public static DoorId fromHashCode(int hashCode) {
-            for(DoorId position : DoorId.values()) {
-                if(hashCode == position.getHashCode()) {
-                    return position;
-                }
-            }
-            throw new IllegalArgumentException(
-                    "No valid door ID for hash code " + hashCode);
-        }
+        BOOT
     }
 
-    public VehicleDoorStatus(State<DoorId> value, Boolean action) {
-        super(value);
-        mAction = new AgingData<Boolean>(action);
+    public VehicleDoorStatus(State<DoorId> value, Boolean event) {
+        super(value, event);
     }
 
-    public VehicleDoorStatus(DoorId value, Boolean action) {
-        this(new State<DoorId>(value), action);
+    public VehicleDoorStatus(DoorId value, Boolean event) {
+        this(new State<DoorId>(value), event);
     }
 
-    public VehicleDoorStatus(Double value, Double action) {
-        this(DoorId.fromHashCode(value.intValue()), new Boolean(action));
+    public VehicleDoorStatus(String value, java.lang.Boolean event) {
+        this(DoorId.valueOf(value.toUpperCase()), new Boolean(event));
     }
 
-    public Boolean getAction() {
-        return mAction.getValue();
+    @Override
+    public Boolean getEvent() {
+        return (Boolean) super.getEvent();
+    }
+
+    @Override
+    public java.lang.Boolean getSerializedEvent() {
+        return new java.lang.Boolean(getEvent().booleanValue());
+    }
+
+    @Override
+    public String getSerializedValue() {
+        return getValue().enumValue().toString();
+    }
+
+    @Override
+    public String getGenericName() {
+        return ID;
     }
 }

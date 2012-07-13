@@ -20,19 +20,19 @@ import com.openxc.measurements.Odometer;
 import com.openxc.measurements.FineOdometer;
 import com.openxc.measurements.Latitude;
 import com.openxc.measurements.Longitude;
-import com.openxc.remote.NoValueException;
+import com.openxc.NoValueException;
 import com.openxc.measurements.SteeringWheelAngle;
-import com.openxc.measurements.PowertrainTorque;
+import com.openxc.measurements.TorqueAtTransmission;
 import com.openxc.measurements.TransmissionGearPosition;
 import com.openxc.measurements.VehicleButtonEvent;
-import com.openxc.measurements.VehicleMeasurement;
+import com.openxc.measurements.Measurement;
 import com.openxc.measurements.VehicleSpeed;
 import com.openxc.measurements.UnrecognizedMeasurementTypeException;
 import com.openxc.measurements.WindshieldWiperStatus;
 
-import com.openxc.remote.sources.trace.TraceVehicleDataSource;
+import com.openxc.sources.trace.TraceVehicleDataSource;
 
-import com.openxc.VehicleService;
+import com.openxc.VehicleManager;
 
 import android.content.Intent;
 
@@ -44,12 +44,12 @@ import android.test.suitebuilder.annotation.MediumTest;
 
 import junit.framework.Assert;
 
-public class MeasurementsTest extends ServiceTestCase<VehicleService> {
-    VehicleService service;
+public class MeasurementsTest extends ServiceTestCase<VehicleManager> {
+    VehicleManager service;
     URI traceUri;
 
     public MeasurementsTest() {
-        super(VehicleService.class);
+        super(VehicleManager.class);
     }
 
     private void copyTraces() {
@@ -73,16 +73,23 @@ public class MeasurementsTest extends ServiceTestCase<VehicleService> {
         copyTraces();
 
         Intent startIntent = new Intent();
-        startIntent.setClass(getContext(), VehicleService.class);
-        service = ((VehicleService.VehicleServiceBinder)
+        startIntent.setClass(getContext(), VehicleManager.class);
+        service = ((VehicleManager.VehicleBinder)
                 bindService(startIntent)).getService();
         service.waitUntilBound();
-        service.setDataSource(TraceVehicleDataSource.class.getName(),
-                traceUri.toString());
+        service.addSource(new TraceVehicleDataSource(getContext(), traceUri));
         pause(200);
     }
 
-    private void checkReceivedMeasurement(VehicleMeasurement measurement) {
+    @Override
+    protected void tearDown() throws Exception {
+        super.tearDown();
+        if(service != null)  {
+            service.initializeDefaultSources();
+        }
+    }
+
+    private void checkReceivedMeasurement(Measurement measurement) {
         assertNotNull(measurement);
     }
 
@@ -106,11 +113,11 @@ public class MeasurementsTest extends ServiceTestCase<VehicleService> {
     }
 
     @MediumTest
-    public void testGetPowertrainTorque()
+    public void testGetTorqueAtTransmission()
             throws UnrecognizedMeasurementTypeException, NoValueException,
             RemoteException, InterruptedException {
-        PowertrainTorque measurement = (PowertrainTorque)
-                service.get(PowertrainTorque.class);
+        TorqueAtTransmission measurement = (TorqueAtTransmission)
+                service.get(TorqueAtTransmission.class);
         checkReceivedMeasurement(measurement);
         assertEquals(measurement.getValue().doubleValue(), 232.1);
     }
@@ -246,7 +253,7 @@ public class MeasurementsTest extends ServiceTestCase<VehicleService> {
         checkReceivedMeasurement(event);
         assertEquals(event.getValue().enumValue(),
                 VehicleButtonEvent.ButtonId.OK);
-        assertEquals(event.getAction().enumValue(),
+        assertEquals(event.getEvent().enumValue(),
                 VehicleButtonEvent.ButtonAction.PRESSED);
     }
 

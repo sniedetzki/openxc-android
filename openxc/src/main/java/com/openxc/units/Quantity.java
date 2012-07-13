@@ -9,7 +9,7 @@ import com.google.common.base.Objects;
  * which encapsulates common logic for converting among different numerical
  * values.
  */
-public abstract class Quantity<T extends Number> {
+public abstract class Quantity<T extends Number> extends Unit {
     private T mValue;
 
     /**
@@ -21,12 +21,22 @@ public abstract class Quantity<T extends Number> {
         mValue = value;
     }
 
-    public boolean equalTo(T otherValue) {
-        return mValue.equals(otherValue);
+    @Override
+    public boolean equals(Object obj) {
+        if(!super.equals(obj)) {
+            return false;
+        }
+
+        final Quantity<T> other = (Quantity<T>) obj;
+        return mValue.equals(other.mValue);
     }
 
     public double doubleValue() {
         return mValue.doubleValue();
+    }
+
+    public Object getSerializedValue() {
+        return doubleValue();
     }
 
     public int intValue() {
