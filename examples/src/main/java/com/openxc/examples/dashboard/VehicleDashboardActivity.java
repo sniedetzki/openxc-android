@@ -55,6 +55,7 @@ public class VehicleDashboardActivity extends Activity {
     private static String TAG = "VehicleDashboard";
 
     private VehicleManager mVehicleManager;
+    private TraceVehicleDataSource mTraceSource;
     private boolean mIsBound;
     private final Handler mHandler = new Handler();
     private TextView mSteeringWheelAngleView;
@@ -353,9 +354,10 @@ public class VehicleDashboardActivity extends Activity {
 
             try {
                 try {
-                    mVehicleManager.addSource(new TraceVehicleDataSource(
+                    mTraceSource = new TraceVehicleDataSource(
                                 VehicleDashboardActivity.this,
-                                traceUri));
+                                traceUri);
+                    mVehicleManager.addSource(mTraceSource);
                 } catch(DataSourceException e) {
                     Log.w(TAG, "Unable to set trace data source", e);
                 }
@@ -501,6 +503,7 @@ public class VehicleDashboardActivity extends Activity {
     public void onPause() {
         super.onPause();
         if(mIsBound) {
+            mVehicleManager.removeSource(mTraceSource);
             Log.i(TAG, "Unbinding from vehicle service");
             unbindService(mConnection);
             mIsBound = false;
