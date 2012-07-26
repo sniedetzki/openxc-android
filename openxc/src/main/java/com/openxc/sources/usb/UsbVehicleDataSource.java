@@ -121,8 +121,15 @@ public class UsbVehicleDataSource extends ContextualVehicleDataSource
         mDeviceConnectionLock = new ReentrantLock();
         mDeviceChanged = mDeviceConnectionLock.newCondition();
 
-        mManager = (UsbManager) getContext().getSystemService(
-                Context.USB_SERVICE);
+        try {
+            mManager = (UsbManager) getContext().getSystemService(
+                    Context.USB_SERVICE);
+        } catch(NoClassDefFoundError e) {
+            String message = "No USB service found on this device -- " +
+                "can't use USB vehicle interface";
+            Log.w(TAG, message);
+            throw new DataSourceException(message);
+        }
         mPermissionIntent = PendingIntent.getBroadcast(getContext(), 0,
                 new Intent(ACTION_USB_PERMISSION), 0);
         IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
@@ -138,12 +145,7 @@ public class UsbVehicleDataSource extends ContextualVehicleDataSource
 
         mVendorId = UsbDeviceUtilities.vendorFromUri(device);
         mProductId = UsbDeviceUtilities.productFromUri(device);
-        try {
-            connectToDevice(mManager, mVendorId, mProductId);
-        } catch(DataSourceException e) {
-            Log.i(TAG, "Unable to load USB device -- " +
-                    "waiting for it to appear", e);
-        }
+        start();
     }
 
     /**
@@ -169,16 +171,13 @@ public class UsbVehicleDataSource extends ContextualVehicleDataSource
         this(null, context);
     }
 
-    @Override
-    public void setCallback(SourceCallback callback) {
-        super.setCallback(callback);
-        start();
-    }
-
-    public void start() {
-        primeOutput();
-        mRunning = true;
-        new Thread(this).start();
+    public synchronized void start() {
+        if(!mRunning) {
+            initializeDevice();
+            primeOutput();
+            mRunning = true;
+            new Thread(this).start();
+        }
     }
 
     /**
@@ -191,14 +190,7 @@ public class UsbVehicleDataSource extends ContextualVehicleDataSource
     public void stop() {
         super.stop();
         Log.d(TAG, "Stopping USB listener");
-        if(!mRunning) {
-            Log.d(TAG, "Already stopped.");
-            return;
-        }
-        mRunning = false;
-    }
 
-    public void close() {
         mDeviceConnectionLock.lock();
         mDeviceChanged.signal();
         if(mConnection != null && mInterface != null) {
@@ -206,6 +198,12 @@ public class UsbVehicleDataSource extends ContextualVehicleDataSource
         }
         mDeviceConnectionLock.unlock();
         getContext().unregisterReceiver(mBroadcastReceiver);
+
+        if(!mRunning) {
+            Log.d(TAG, "Already stopped.");
+            return;
+        }
+        mRunning = false;
     }
 
     /**
@@ -216,21 +214,21 @@ public class UsbVehicleDataSource extends ContextualVehicleDataSource
      * either waits for a new device connection or reads USB packets.
      */
     public void run() {
-        waitForDeviceConnection();
-
         double lastLoggedTransferStatsAtByte = 0;
         byte[] bytes = new byte[128];
         StringBuffer buffer = new StringBuffer();
         final long startTime = System.nanoTime();
         long endTime;
         while(mRunning) {
-            waitForDeviceConnection();
-
             mDeviceConnectionLock.lock();
-            if(mConnection == null) {
-            	mDeviceConnectionLock.unlock();
-                continue;
+
+            try {
+                waitForDeviceConnection();
+            } catch(InterruptedException e) {
+                Log.d(TAG, "Interrupted while waiting for a device");
+                break;
             }
+
             // TODO when there haven't been any USB transfers for a long time,
             // we can get stuck here. do we need a timeout so it retries after
             // USB wakes backup? Why does USB seem to go to sleep in the first
@@ -276,6 +274,15 @@ public class UsbVehicleDataSource extends ContextualVehicleDataSource
         write(bytes);
     }
 
+    private void initializeDevice() {
+        try {
+            connectToDevice(mManager, mVendorId, mProductId);
+        } catch(DataSourceException e) {
+            Log.i(TAG, "Unable to load USB device -- " +
+                    "waiting for it to appear", e);
+        }
+    }
+
     private void write(byte[] bytes) {
         if(mConnection != null && mOutEndpoint != null) {
             Log.d(TAG, "Writing bytes to USB: " + bytes);
@@ -300,15 +307,14 @@ public class UsbVehicleDataSource extends ContextualVehicleDataSource
             kilobytesTransferred / elapsedTime + " KB/s");
     }
 
-    private void waitForDeviceConnection() {
-        mDeviceConnectionLock.lock();
+    /* You must have the mDeviceConnectionLock locked before calling this
+     * function.
+     */
+    private void waitForDeviceConnection() throws InterruptedException {
         while(mRunning && mConnection == null) {
             Log.d(TAG, "Still no device available");
-            try {
-                mDeviceChanged.await();
-            } catch(InterruptedException e) {}
+            mDeviceChanged.await();
         }
-        mDeviceConnectionLock.unlock();
     }
 
     private void parseStringBuffer(StringBuffer buffer) {
@@ -420,7 +426,6 @@ public class UsbVehicleDataSource extends ContextualVehicleDataSource
                 mConnection = setupDevice(mManager, device);
                 Log.i(TAG, "Connected to USB device with " +
                         mConnection);
-                start();
             } catch(UsbDeviceException e) {
                 Log.w("Couldn't open USB device", e);
             } finally {

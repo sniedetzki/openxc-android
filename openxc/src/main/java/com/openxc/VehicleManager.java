@@ -7,6 +7,12 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import com.openxc.sinks.DataSinkException;
+
+import com.openxc.sources.bluetooth.BluetoothVehicleDataSource;
+
+import com.openxc.sources.DataSourceException;
+
 import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
@@ -78,15 +84,21 @@ import com.openxc.util.AndroidFileOpener;
  * The sources of data and any post-processing that happens is controlled by
  * modifying a list of "sources" and "sinks". When a message is received from a
  * data source, it is passed to any and all registered message "sinks" - these
- * receivers conform to the {@link com.openxc.sinks.VehicleDataSinkInterface}.
+ * receivers conform to the {@link com.openxc.sinks.VehicleDataSink}.
  * There will always be at least one sink that stores the latest messages and
  * handles passing on data to users of the VehicleManager class. Other possible
  * sinks include the {@link com.openxc.sinks.FileRecorderSink} which records a
  * trace of the raw OpenXC measurements to a file and a web streaming sink
  * (which streams the raw data to a web application). Other possible sources
- * include the {@link com.openxc.sources.TraceVehicleDataSource} which reads a
- * previously recorded vehicle data trace file and plays back the measurements
+ * include the {@link com.openxc.sources.trace.TraceVehicleDataSource} which
+ * reads a previously recorded vehicle data trace file and plays back the
+ * measurements
  * in real-time.
+ *
+ * One small inconsistency is that if a Bluetooth data source is added, any
+ * calls to set() will be sent to that device. If no Belutooth data source is
+ * in the pipeline, the standard USB device will be used instead. There is
+ * currently no way to modify this behavior.
  */
 public class VehicleManager extends Service implements SourceCallback {
     public final static String VEHICLE_LOCATION_PROVIDER =
@@ -104,6 +116,7 @@ public class VehicleManager extends Service implements SourceCallback {
     private RemoteListenerSource mRemoteSource;
     private VehicleDataSink mFileRecorder;
     private VehicleDataSource mNativeLocationSource;
+    private BluetoothVehicleDataSource mBluetoothSource;
     private VehicleDataSink mUploader;
     private MeasurementListenerSink mNotifier;
     // The DataPipeline in this class must only have 1 source - the special
@@ -231,6 +244,9 @@ public class VehicleManager extends Service implements SourceCallback {
         if(mPipeline != null) {
             mPipeline.stop();
         }
+        if(mBluetoothSource != null) {
+            mBluetoothSource.close();
+        }
         unwatchPreferences(mPreferences, mPreferenceListener);
         unbindRemote();
     }
@@ -291,22 +307,31 @@ public class VehicleManager extends Service implements SourceCallback {
      */
     public void set(Measurement command) throws
                 UnrecognizedMeasurementTypeException {
-        if(mRemoteService == null) {
-            Log.w(TAG, "Not connected to the VehicleService");
-            return;
-        }
-
         Log.d(TAG, "Sending command " + command);
-        try {
-            // TODO measurement should know how to convert itself back to raw...
-            // or maybe we don't even need raw in this case. oh wait, we can't
-            // send templated class over AIDL so we do.
-            RawMeasurement rawCommand = new RawMeasurement(command.getGenericName(),
-                    command.getSerializedValue(),
-                    command.getSerializedEvent());
-            mRemoteService.set(rawCommand);
-        } catch(RemoteException e) {
-            Log.w(TAG, "Unable to send command to remote vehicle service", e);
+
+        // TODO measurement should know how to convert itself back to raw...
+        // or maybe we don't even need raw in this case. oh wait, we can't
+        // send templated class over AIDL so we do.
+        RawMeasurement rawCommand = new RawMeasurement(command.getGenericName(),
+                command.getSerializedValue(),
+                command.getSerializedEvent());
+
+        // prefer the Bluetooth controller, if connected
+        if(mBluetoothSource != null) {
+            Log.d(TAG, "Sending " + rawCommand + " over Bluetooth to " +
+                    mBluetoothSource);
+            mBluetoothSource.set(rawCommand);
+        } else {
+            if(mRemoteService == null) {
+                Log.w(TAG, "Not connected to the VehicleService");
+                return;
+            }
+
+            try {
+                mRemoteService.set(rawCommand);
+            } catch(RemoteException e) {
+                Log.w(TAG, "Unable to send command to remote vehicle service", e);
+            }
         }
     }
 
@@ -426,6 +451,44 @@ public class VehicleManager extends Service implements SourceCallback {
     }
 
     /**
+     * Return a list of all sources active in the system, suitable for
+     * displaying in a status view.
+     *
+     * This method is soley for being able to peek into the system to see what's
+     * active, which is why it returns strings intead of the actual source
+     * objects. We don't want applications to be able to modify the sources
+     * through this method.
+     *
+     * @return A list of the names and status of all sources.
+     */
+    public List<String> getSourceSummaries() {
+        ArrayList<String> sources = new ArrayList<String>();
+        for(VehicleDataSource source : mSources) {
+            sources.add(source.toString());
+        }
+
+        for(VehicleDataSource source : mPipeline.getSources()) {
+            sources.add(source.toString());
+        }
+        return sources;
+    }
+
+    /**
+     * Return a list of all sinks active in the system.
+     *
+     * The motivation for this method is the same as {@link #getSources}.
+     *
+     * @return A list of the names and status of all sinks.
+     */
+    public List<String> getSinkSummaries() {
+        ArrayList<String> sinks = new ArrayList<String>();
+        for(VehicleDataSink sink : mPipeline.getSinks()) {
+            sinks.add(sink.toString());
+        }
+        return sinks;
+    }
+
+    /**
      * Remove a previously registered source from the data pipeline.
      */
     public void removeSource(VehicleDataSource source) {
@@ -497,6 +560,50 @@ public class VehicleManager extends Service implements SourceCallback {
             mPipeline.removeSink(mUploader);
         }
     }
+
+    /**
+     * Enable or disable receiving vehicle data from a Bluetooth CAN device.
+     *
+     * @param enabled true if bluetooth should be enabled
+     * @throws VehicleServiceException if the listener is unable to be
+     *      unregistered with the library internals - an exceptional
+     *      situation that shouldn't occur.
+     */
+    public void enableBluetoothSource(boolean enabled)
+            throws VehicleServiceException {
+        Log.i(TAG, "Setting bluetooth data source to " + enabled);
+        if(enabled) {
+            SharedPreferences preferences =
+                PreferenceManager.getDefaultSharedPreferences(this);
+
+            String deviceAddress = preferences.getString(
+                    getString(R.string.bluetooth_mac_key), null);
+            if(deviceAddress != null) {
+                if(mBluetoothSource != null) {
+                    mBluetoothSource.close();
+                }
+
+                try {
+                    mBluetoothSource =
+                        new BluetoothVehicleDataSource(this, deviceAddress);
+                } catch(DataSourceException e) {
+                    Log.w(TAG, "Unable to add Bluetooth source", e);
+                    return;
+                }
+                addSource(mBluetoothSource);
+            } else {
+                Log.d(TAG, "No Bluetooth device MAC set yet (" + deviceAddress +
+                        "), not starting source");
+            }
+        }
+        else {
+            removeSource(mBluetoothSource);
+            if(mBluetoothSource != null) {
+                mBluetoothSource.close();
+            }
+        }
+    }
+
 
     /**
      * Enable or disable recording of a trace file.
@@ -597,6 +704,18 @@ public class VehicleManager extends Service implements SourceCallback {
         }
     }
 
+    private void setBluetoothSourceStatus() {
+        SharedPreferences preferences =
+            PreferenceManager.getDefaultSharedPreferences(this);
+        boolean bluetoothEnabled = preferences.getBoolean(
+                getString(R.string.bluetooth_checkbox_key), false);
+        try {
+            enableBluetoothSource(bluetoothEnabled);
+        } catch(VehicleServiceException e) {
+            Log.w(TAG, "Unable to set Bluetooth data source after binding", e);
+        }
+    }
+
     private void setRecordingStatus() {
         SharedPreferences preferences =
             PreferenceManager.getDefaultSharedPreferences(this);
@@ -651,6 +770,7 @@ public class VehicleManager extends Service implements SourceCallback {
             setUploadingStatus();
             setRecordingStatus();
             setNativeGpsStatus();
+            setBluetoothSourceStatus();
 
             mRemoteBoundLock.lock();
             mIsBound = true;
@@ -699,10 +819,10 @@ public class VehicleManager extends Service implements SourceCallback {
                 setNativeGpsStatus();
             } else if(key.equals(getString(R.string.uploading_checkbox_key))) {
                 setUploadingStatus();
-            } else if(key.equals(getString(R.string.recording_checkbox_key))) {
-                setRecordingStatus();
+            } else if(key.equals(getString(R.string.bluetooth_checkbox_key))
+                        || key.equals(getString(R.string.bluetooth_mac_key))) {
+                setBluetoothSourceStatus();
             }
-
         }
     }
 }
