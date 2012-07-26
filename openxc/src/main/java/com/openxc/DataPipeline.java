@@ -26,7 +26,7 @@ import android.util.Log;
  *
  * A DataPipeline accepts two types of components - sources and sinks. The
  * sources (implementing {@link VehicleDataSource} call the
- * {@link #receive(String, Object, Object)} method on the this class when new
+ * {@link #receive(RawMeasurement)} method on the this class when new
  * values arrive. The DataPipeline then passes this value on to all currently
  * registered data sinks.
  */
@@ -52,6 +52,9 @@ public class DataPipeline implements SourceCallback {
      * be removed from the list of sinks.
      */
     public void receive(RawMeasurement measurement) {
+        if(measurement == null) {
+            return;
+        }
         mMeasurements.put(measurement.getName(), measurement);
         List<VehicleDataSink> deadSinks = new ArrayList<VehicleDataSink>();
         for(Iterator<VehicleDataSink> i = mSinks.iterator(); i.hasNext();) {
@@ -121,6 +124,14 @@ public class DataPipeline implements SourceCallback {
             mSources.remove(source);
             source.stop();
         }
+    }
+
+    public List<VehicleDataSource> getSources() {
+        return mSources;
+    }
+
+    public List<VehicleDataSink> getSinks() {
+        return mSinks;
     }
 
     /**
