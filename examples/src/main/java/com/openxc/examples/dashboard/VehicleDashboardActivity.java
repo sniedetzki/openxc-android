@@ -8,8 +8,6 @@ import java.io.IOException;
 
 import com.openxc.sources.DataSourceException;
 
-import com.openxc.sources.trace.TraceVehicleDataSource;
-
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
@@ -54,9 +52,8 @@ public class VehicleDashboardActivity extends Activity {
     private static String TAG = "VehicleDashboard";
     public String ACTION_VEHICLE_STARTED = "com.ford.openxc.VEHICLE_STARTED";
     public String ACTION_VEHICLE_OFF = "com.ford.openxc.VEHICLE_OFF";
-    
+
     private VehicleManager mVehicleManager;
-    private TraceVehicleDataSource mTraceSource;
     private boolean mIsBound;
     private final Handler mHandler = new Handler();
     private TextView mSteeringWheelAngleView;
@@ -80,11 +77,10 @@ public class VehicleDashboardActivity extends Activity {
     private TextView mDoorStatusView;
     private TextView mWiperStatusView;
     private TextView mHeadlampStatusView;
-    private URI traceUri;
     StringBuffer mBuffer;
-    
-    
-  
+
+
+
 
     WindshieldWiperStatus.Listener mWiperListener =
             new WindshieldWiperStatus.Listener() {
@@ -259,10 +255,10 @@ public class VehicleDashboardActivity extends Activity {
             mHandler.post(new Runnable() {
                 public void run() {
                     mIgnitionStatusView.setText(
-                        "" + status.getValue().enumValue());                    
+                        "" + status.getValue().enumValue());
                 }
             });
-       String IgnitionStatusToString = status.getValue().enumValue().toString();  
+       String IgnitionStatusToString = status.getValue().enumValue().toString();
        		if (IgnitionStatusToString == "OFF" || IgnitionStatusToString == "START"){
             	if (IgnitionStatusToString == "OFF") {
         			Intent broadcastIntent = new Intent(ACTION_VEHICLE_OFF);
@@ -370,14 +366,6 @@ public class VehicleDashboardActivity extends Activity {
                     ).getService();
 
             try {
-                try {
-                    mTraceSource = new TraceVehicleDataSource(
-                                VehicleDashboardActivity.this,
-                                traceUri);
-                    mVehicleManager.addSource(mTraceSource);
-                } catch(DataSourceException e) {
-                    Log.w(TAG, "Unable to set trace data source", e);
-                }
                 mVehicleManager.addListener(SteeringWheelAngle.class,
                         mSteeringWheelListener);
                 mVehicleManager.addListener(VehicleSpeed.class,
@@ -435,13 +423,12 @@ public class VehicleDashboardActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        copyTraces();
 
         setContentView(R.layout.main);
         Log.i(TAG, "Vehicle dashboard created");
 
-       
-        
+
+
         mSteeringWheelAngleView = (TextView) findViewById(
                 R.id.steering_wheel_angle);
         mVehicleSpeedView = (TextView) findViewById(
@@ -487,20 +474,6 @@ public class VehicleDashboardActivity extends Activity {
         mBuffer = new StringBuffer();
     }
 
-    private void copyTraces() {
-        try {
-            traceUri = new URI("file:///sdcard/com.openxc/trace.json");
-        } catch(URISyntaxException e) {
-            Log.w(TAG, "Couldn't construct resource URIs: " + e);
-        }
-
-        try {
-            FileUtils.copyInputStreamToFile(
-                    getResources().openRawResource(R.raw.driving),
-                    new File(traceUri));
-        } catch(IOException e) {}
-    }
-
     @Override
     public void onResume() {
         super.onResume();
@@ -522,7 +495,6 @@ public class VehicleDashboardActivity extends Activity {
     public void onPause() {
         super.onPause();
         if(mIsBound) {
-            mVehicleManager.removeSource(mTraceSource);
             Log.i(TAG, "Unbinding from vehicle service");
             unbindService(mConnection);
             mIsBound = false;
