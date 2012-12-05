@@ -3,8 +3,8 @@ package com.openxc;
 import java.util.ArrayList;
 
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ConcurrentHashMap;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +35,10 @@ public class DataPipeline implements SourceCallback {
     private CopyOnWriteArrayList<VehicleDataSource> mSources;
 
     public DataPipeline() {
-        mMeasurements = new ConcurrentHashMap<String, RawMeasurement>();
+        // This is not a ConcurrentHashMap on purpose - the worst possible race
+        // condition is you get slightly old data when you call get(), and the
+        // tradeoff is increased performance.
+        mMeasurements = new HashMap<String, RawMeasurement>();
         mSinks = new CopyOnWriteArrayList<VehicleDataSink>();
         mSources = new CopyOnWriteArrayList<VehicleDataSource>();
     }
