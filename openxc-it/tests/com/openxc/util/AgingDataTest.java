@@ -3,7 +3,7 @@ package com.openxc.util;
 import java.util.Calendar;
 import java.util.Date;
 
-import com.openxc.TestUtils;
+import com.openxc.it.TestUtils;
 
 import com.openxc.units.Degree;
 

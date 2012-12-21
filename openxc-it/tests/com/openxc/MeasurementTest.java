@@ -6,7 +6,7 @@ import com.openxc.NoValueException;
 
 import com.openxc.remote.RawMeasurement;
 
-import com.openxc.TestUtils;
+import com.openxc.it.TestUtils;
 
 import junit.framework.TestCase;
 import static org.hamcrest.MatcherAssert.assertThat;

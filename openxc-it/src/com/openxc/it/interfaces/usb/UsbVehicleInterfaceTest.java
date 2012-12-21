@@ -1,10 +1,11 @@
-package com.openxc.interfaces.usb;
+package com.openxc.it.interfaces.usb;
 
 import junit.framework.Assert;
 
 import android.test.AndroidTestCase;
 import android.test.suitebuilder.annotation.SmallTest;
 
+import com.openxc.interfaces.usb.UsbVehicleInterface;
 import com.openxc.sources.DataSourceException;
 import com.openxc.sources.DataSourceResourceException;
 

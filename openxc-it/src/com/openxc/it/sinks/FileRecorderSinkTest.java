@@ -1,4 +1,4 @@
-package com.openxc.sinks;
+package com.openxc.it.sinks;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -7,12 +7,13 @@ import java.io.StringWriter;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.openxc.remote.RawMeasurement;
-
-import com.openxc.util.FileOpener;
-
 import android.test.AndroidTestCase;
 import android.test.suitebuilder.annotation.SmallTest;
+
+import com.openxc.remote.RawMeasurement;
+import com.openxc.sinks.DataSinkException;
+import com.openxc.sinks.FileRecorderSink;
+import com.openxc.util.FileOpener;
 
 public class FileRecorderSinkTest extends AndroidTestCase {
     FileRecorderSink sink;

@@ -1,10 +1,11 @@
-package com.openxc.remote;
+package com.openxc.it.remote;
 
 import junit.framework.Assert;
 import junit.framework.TestCase;
 
-import com.openxc.TestUtils;
+import com.openxc.it.TestUtils;
 import com.openxc.measurements.UnrecognizedMeasurementTypeException;
+import com.openxc.remote.RawMeasurement;
 
 public class RawMeasurementTest extends TestCase {
     RawMeasurement measurement;

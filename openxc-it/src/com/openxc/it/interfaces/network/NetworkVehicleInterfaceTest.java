@@ -1,10 +1,11 @@
-package com.openxc.interfaces.network;
+package com.openxc.it.interfaces.network;
 
 import junit.framework.Assert;
 
 import android.test.AndroidTestCase;
 import android.test.suitebuilder.annotation.SmallTest;
 
+import com.openxc.interfaces.network.NetworkVehicleInterface;
 import com.openxc.sources.DataSourceException;
 import com.openxc.sources.DataSourceResourceException;
 

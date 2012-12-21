@@ -1,8 +1,9 @@
-package com.openxc.sinks;
+package com.openxc.it.sinks;
 
 import android.test.AndroidTestCase;
-
 import android.test.suitebuilder.annotation.SmallTest;
+
+import com.openxc.sinks.ContextualVehicleDataSink;
 
 public class ContextualVehicleDataSinkTest extends AndroidTestCase {
     ContextualVehicleDataSink sink;

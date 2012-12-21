@@ -1,4 +1,4 @@
-package com.openxc;
+package com.openxc.it;
 
 import java.net.URI;
 

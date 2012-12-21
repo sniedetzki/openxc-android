@@ -1,11 +1,12 @@
-package com.openxc.sinks;
+package com.openxc.it.sinks;
+
+import android.test.AndroidTestCase;
+import android.test.suitebuilder.annotation.SmallTest;
 
 import com.openxc.remote.RawMeasurement;
 import com.openxc.remote.VehicleServiceListener;
-
-import android.test.AndroidTestCase;
-
-import android.test.suitebuilder.annotation.SmallTest;
+import com.openxc.sinks.DataSinkException;
+import com.openxc.sinks.RemoteCallbackSink;
 
 public class RemoteCallbackSinkTest extends AndroidTestCase {
     RemoteCallbackSink notifier;

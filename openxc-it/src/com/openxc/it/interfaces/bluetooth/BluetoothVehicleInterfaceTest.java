@@ -1,8 +1,9 @@
-package com.openxc.interfaces.bluetooth;
+package com.openxc.it.interfaces.bluetooth;
 
 import android.test.AndroidTestCase;
 import android.test.suitebuilder.annotation.SmallTest;
 
+import com.openxc.interfaces.bluetooth.BluetoothVehicleInterface;
 import com.openxc.sources.DataSourceException;
 
 public class BluetoothVehicleInterfaceTest extends AndroidTestCase {

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-  package="com.openxc" android:versionCode="1" android:versionName="1.0-SNAPSHOT">
+  package="com.openxc.it" android:versionCode="1" android:versionName="1.0-SNAPSHOT">
 
   <supports-screens android:largeScreens="true" android:xlargeScreens="true"
           android:anyDensity="true" />
@@ -20,8 +20,8 @@
   <application android:label="@string/app_name" android:allowBackup="false"
           android:debuggable="true">
       <uses-library android:name="android.test.runner" />
-      <service android:name=".VehicleManager" android:exported="false"/>
-      <service android:name=".remote.VehicleService" android:process=":remote"
+      <service android:name="com.openxc.VehicleManager" android:exported="false"/>
+      <service android:name="com.openxc.remote.VehicleService" android:process=":remote"
               android:exported="false">
           <intent-filter>
               <action android:name="com.openxc.remote.VehicleServiceInterface" />
@@ -29,7 +29,7 @@
       </service>
   </application>
 
-  <instrumentation android:targetPackage="com.openxc"
+  <instrumentation android:targetPackage="com.openxc.it"
     android:name="android.test.InstrumentationTestRunner" />
 </manifest>
 

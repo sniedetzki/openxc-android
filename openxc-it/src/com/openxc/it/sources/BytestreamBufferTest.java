@@ -1,9 +1,11 @@
-package com.openxc.sources;
+package com.openxc.it.sources;
 
 import java.util.List;
 
 import android.test.AndroidTestCase;
 import android.test.suitebuilder.annotation.SmallTest;
+
+import com.openxc.sources.BytestreamBuffer;
 
 public class BytestreamBufferTest extends AndroidTestCase {
     BytestreamBuffer buffer;
