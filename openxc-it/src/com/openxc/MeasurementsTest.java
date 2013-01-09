@@ -226,8 +226,7 @@ public class MeasurementsTest extends ServiceTestCase<VehicleManager> {
         checkReceivedMeasurement(event);
         assertEquals(event.getValue().enumValue(),
                 VehicleButtonEvent.ButtonId.OK);
-        assertEquals(event.getEvent().enumValue(),
-                VehicleButtonEvent.ButtonAction.PRESSED);
+        // TODO test new map style value
     }
 }
 

@@ -21,7 +21,6 @@ public class FileRecorderSinkTest extends AndroidTestCase {
 
     String measurementId = "measurement";
     String value = "value";
-    String event = "event";
 
     @Override
     public void setUp() throws IOException, DataSinkException {
@@ -39,14 +38,7 @@ public class FileRecorderSinkTest extends AndroidTestCase {
         assertTrue(outputString.toString().indexOf(value) != -1);
     }
 
-    @SmallTest
-    public void testReceiveEvented() throws DataSinkException {
-        sink.receive(new RawMeasurement(measurementId, value, event));
-        sink.flush();
-        assertTrue(outputString.toString().indexOf(measurementId) != -1);
-        assertTrue(outputString.toString().indexOf(value) != -1);
-        assertTrue(outputString.toString().indexOf(event) != -1);
-    }
+    // TODO test with a new style mapped value instead of event
 
     @SmallTest
     public void testOutputFormat() throws JSONException, DataSinkException {

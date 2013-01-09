@@ -100,7 +100,7 @@ public class SporadicDataTest extends ServiceTestCase<VehicleManager> {
 
     @MediumTest
     public void testSlowSends() {
-        TestUtils.pause(800);
+        TestUtils.pause(1200);
         assertEquals(headlampStatusCount, 2);
         assertEquals(parkingBrakeStatusCount, 1);
     }

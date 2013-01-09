@@ -1,6 +1,8 @@
 package com.openxc.remote;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -17,15 +19,15 @@ import com.openxc.measurements.serializers.JsonSerializer;
 /**
  * An untyped measurement used only for the AIDL VehicleService interface.
  *
- * This abstract base class is intented to be the parent of numerical, state and
+ * This abstract base class is intended to be the parent of numerical, state and
  * boolean measurements. The architecture ended up using only numerical
  * measurements, with other types being coerced to doubles.
  *
- * A raw measurement can have a value, an event, both or neither. Most
- * measurements have only a value - measurements also with an event include
- * things like button events (where both the button direction and action need to
- * be identified). The value and event are both nullable, for cases where a
- * measurement needs to be returned but there is no valid value for it.
+ * A raw measurement has a value, which can be any type valid in JSON. Most
+ * measurements have only a primitive value, but some have objects as values
+ * which have their own, arbitrary properties (e.g. button events, door status,
+ * GPS location). The value may be null, for cases where a measurement needs to
+ * be returned but there is no valid value for it.
  *
  * This class implements the Parcelable interface, so it can be used directly as
  * a return value or function parameter in an AIDL interface.
@@ -39,7 +41,6 @@ public class RawMeasurement implements Parcelable {
     private double mTimestamp;
     private String mName;
     private Object mValue;
-    private Object mEvent;
 
     public RawMeasurement(String name, Object value) {
         this();
@@ -47,14 +48,8 @@ public class RawMeasurement implements Parcelable {
         mValue = value;
     }
 
-    public RawMeasurement(String name, Object value, Object event) {
+    public RawMeasurement(String name, Object value, double timestamp) {
         this(name, value);
-        mEvent = event;
-    }
-
-    public RawMeasurement(String name, Object value, Object event,
-            double timestamp) {
-        this(name, value, event);
         mTimestamp = timestamp;
         timestamp();
     }
@@ -69,14 +64,12 @@ public class RawMeasurement implements Parcelable {
         out.writeString(getName());
         out.writeDouble(getTimestamp());
         out.writeValue(getValue());
-        out.writeValue(getEvent());
     }
 
     public void readFromParcel(Parcel in) {
         mName = in.readString();
         mTimestamp = in.readDouble();
         mValue = in.readValue(null);
-        mEvent = in.readValue(null);
     }
 
     public static final Parcelable.Creator<RawMeasurement> CREATOR =
@@ -102,7 +95,7 @@ public class RawMeasurement implements Parcelable {
         if(reserialize || mCachedSerialization == null) {
             Double timestamp = isTimestamped() ? getTimestamp() : null;
             mCachedSerialization = JsonSerializer.serialize(getName(),
-                    getValue(), getEvent(), timestamp);
+                    getValue(), timestamp);
         }
         return mCachedSerialization;
     }
@@ -113,14 +106,6 @@ public class RawMeasurement implements Parcelable {
 
     public Object getValue() {
         return mValue;
-    }
-
-    public boolean hasEvent() {
-        return getEvent() != null;
-    }
-
-    public Object getEvent() {
-        return mEvent;
     }
 
     /**
@@ -151,7 +136,6 @@ public class RawMeasurement implements Parcelable {
     public String toString() {
         return Objects.toStringHelper(this)
             .add("value", getValue())
-            .add("event", getEvent())
             .toString();
     }
 
@@ -172,13 +156,11 @@ public class RawMeasurement implements Parcelable {
             parser.nextToken();
             while(parser.nextToken() != JsonToken.END_OBJECT) {
                 String field = parser.getCurrentName();
-                parser.nextToken();
+                JsonToken token = parser.nextToken();
                 if(JsonSerializer.NAME_FIELD.equals(field)) {
                     measurement.mName = parser.getText();
                 } else if(JsonSerializer.VALUE_FIELD.equals(field)) {
-                    measurement.mValue = parseUnknownType(parser);
-                } else if(JsonSerializer.EVENT_FIELD.equals(field)) {
-                    measurement.mEvent = parseUnknownType(parser);
+                    measurement.mValue = parseUnknownType(parser, token);
                 } else if(JsonSerializer.TIMESTAMP_FIELD.equals(field)) {
                     measurement.mTimestamp =
                         parser.getNumberValue().doubleValue();
@@ -202,20 +184,33 @@ public class RawMeasurement implements Parcelable {
         measurement.mCachedSerialization = measurementString;
     }
 
-    private static Object parseUnknownType(JsonParser parser) {
+    private static Object parseUnknownType(JsonParser parser, JsonToken token) {
         Object value = null;
         try {
-            value = parser.getNumberValue();
-        } catch(JsonParseException e) {
-            try {
-                value = parser.getBooleanValue();
-            } catch(JsonParseException e2) {
-                try {
-                    value = parser.getText();
-                } catch(JsonParseException e3) {
-                } catch(IOException e4) {
+            if(token == JsonToken.START_OBJECT) {
+                Map<String, Object> valueObject = new HashMap<String, Object>();
+                while(parser.nextToken() != JsonToken.END_OBJECT) {
+                    String field = parser.getCurrentName();
+                    token = parser.nextToken();
+                    Object subValue = parseUnknownType(parser, token);
+                    valueObject.put(field, subValue);
                 }
-            } catch(IOException e5) {
+                value = valueObject;
+            } else {
+                try {
+                    value = parser.getNumberValue();
+                } catch(JsonParseException e) {
+                    try {
+                        value = parser.getBooleanValue();
+                    } catch(JsonParseException e2) {
+                        try {
+                            value = parser.getText();
+                        } catch(JsonParseException e3) {
+                        } catch(IOException e4) {
+                        }
+                    } catch(IOException e5) {
+                    }
+                }
             }
         } catch(IOException e) {
         }

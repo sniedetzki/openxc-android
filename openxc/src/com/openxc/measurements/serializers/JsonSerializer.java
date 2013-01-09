@@ -14,12 +14,11 @@ public class JsonSerializer implements MeasurementSerializer {
     private static final String TAG = "JsonSerializer";
     public static final String NAME_FIELD = "name";
     public static final String VALUE_FIELD = "value";
-    public static final String EVENT_FIELD = "event";
     public static final String TIMESTAMP_FIELD = "timestamp";
     private static DecimalFormat sTimestampFormatter =
             new DecimalFormat("##########.000000");
 
-    public static String serialize(String name, Object value, Object event,
+    public static String serialize(String name, Object value,
             Double timestamp) {
         StringWriter buffer = new StringWriter(64);
         JsonFactory jsonFactory = new JsonFactory();
@@ -31,10 +30,6 @@ public class JsonSerializer implements MeasurementSerializer {
 
             if(value != null) {
                 gen.writeObjectField(VALUE_FIELD, value);
-            }
-
-            if(event != null) {
-                gen.writeObjectField(EVENT_FIELD, event);
             }
 
             if(timestamp != null) {

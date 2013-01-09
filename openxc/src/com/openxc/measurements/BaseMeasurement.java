@@ -34,7 +34,6 @@ import com.openxc.util.Range;
  */
 public class BaseMeasurement<TheUnit extends Unit> implements Measurement {
     private AgingData<TheUnit> mValue;
-    private AgingData<Unit> mEvent;
     private Range<TheUnit> mRange;
     private static BiMap<String, Class<? extends Measurement>>
             sMeasurementIdToClass;
@@ -50,11 +49,6 @@ public class BaseMeasurement<TheUnit extends Unit> implements Measurement {
      */
     public BaseMeasurement(TheUnit value) {
         mValue = new AgingData<TheUnit>(value);
-    }
-
-    public BaseMeasurement(TheUnit value, Unit event) {
-        this(value);
-        mEvent = new AgingData<Unit>(event);
     }
 
     /**
@@ -98,19 +92,8 @@ public class BaseMeasurement<TheUnit extends Unit> implements Measurement {
         return mValue.getValue();
     }
 
-    public Object getEvent() {
-        if(mEvent != null) {
-            return mEvent.getValue();
-        }
-        return null;
-    }
-
     public Object getSerializedValue() {
         return getValue().getSerializedValue();
-    }
-
-    public Object getSerializedEvent() {
-        return getEvent();
     }
 
     public String serialize() {
@@ -119,7 +102,7 @@ public class BaseMeasurement<TheUnit extends Unit> implements Measurement {
 
     public RawMeasurement toRaw() {
         return new RawMeasurement(getGenericName(), getSerializedValue(),
-                getSerializedEvent(), mValue.getTimestamp());
+                mValue.getTimestamp());
     }
 
     public static Measurement deserialize(String measurementString)
@@ -191,38 +174,19 @@ public class BaseMeasurement<TheUnit extends Unit> implements Measurement {
                 valueClass = Number.class;
             }
 
-            Class<?> eventClass = rawMeasurement.hasEvent() ?
-                                rawMeasurement.getEvent().getClass()
-                                : null;
-            if(eventClass == Double.class || eventClass == Integer.class) {
-                eventClass = Number.class;
-            }
-
             try {
-                if(eventClass != null) {
-                    constructor = measurementType.getConstructor(
-                            valueClass, eventClass);
-                } else {
-                    constructor = measurementType.getConstructor(valueClass);
-                }
+                constructor = measurementType.getConstructor(valueClass);
             } catch(NoSuchMethodException e) {
                 throw new UnrecognizedMeasurementTypeException(measurementType +
                         " doesn't have the expected constructor, " +
                        measurementType + "(" +
-                       valueClass +
-                       (eventClass != null ? ", " + eventClass : "") + ")");
+                       valueClass + ")");
             }
 
             Measurement measurement;
             try {
-                if(eventClass != null) {
-                    measurement = constructor.newInstance(
-                            rawMeasurement.getValue(),
-                            rawMeasurement.getEvent());
-                } else {
-                    measurement = constructor.newInstance(
-                            rawMeasurement.getValue());
-                }
+                measurement = constructor.newInstance(
+                        rawMeasurement.getValue());
                 measurement.setTimestamp(rawMeasurement.getTimestamp());
                 return measurement;
             } catch(InstantiationException e) {
@@ -260,14 +224,6 @@ public class BaseMeasurement<TheUnit extends Unit> implements Measurement {
         @SuppressWarnings("unchecked")
 		final BaseMeasurement<TheUnit> other = (BaseMeasurement<TheUnit>) obj;
         if(!other.getValue().equals(getValue())) {
-            return false;
-        }
-
-        if(other.getEvent() != null && getEvent() != null) {
-            if(!other.getEvent().equals(getEvent())) {
-                return false;
-            }
-        } else if(other.getEvent() != getEvent()) {
             return false;
         }
 

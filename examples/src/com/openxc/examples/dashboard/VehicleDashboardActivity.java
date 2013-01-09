@@ -34,8 +34,6 @@ import com.openxc.measurements.IgnitionStatus;
 import com.openxc.measurements.SteeringWheelAngle;
 import com.openxc.measurements.TransmissionGearPosition;
 import com.openxc.measurements.UnrecognizedMeasurementTypeException;
-import com.openxc.measurements.VehicleDoorStatus;
-import com.openxc.measurements.VehicleButtonEvent;
 import com.openxc.measurements.Measurement;
 import com.openxc.measurements.VehicleSpeed;
 import com.openxc.measurements.FuelConsumed;
@@ -69,8 +67,6 @@ public class VehicleDashboardActivity extends Activity {
     private TextView mLongitudeView;
     private TextView mAndroidLatitudeView;
     private TextView mAndroidLongitudeView;
-    private TextView mButtonEventView;
-    private TextView mDoorStatusView;
     private TextView mWiperStatusView;
     private TextView mHeadlampStatusView;
     StringBuffer mBuffer;
@@ -254,34 +250,6 @@ public class VehicleDashboardActivity extends Activity {
         }
     };
 
-    VehicleButtonEvent.Listener mButtonEvent =
-            new VehicleButtonEvent.Listener() {
-        public void receive(Measurement measurement) {
-            final VehicleButtonEvent event = (VehicleButtonEvent) measurement;
-            mHandler.post(new Runnable() {
-                public void run() {
-                    mButtonEventView.setText(
-                        event.getValue().enumValue() + " is " +
-                        event.getEvent().enumValue());
-                }
-            });
-        }
-    };
-
-    VehicleDoorStatus.Listener mDoorStatus =
-            new VehicleDoorStatus.Listener() {
-        public void receive(Measurement measurement) {
-            final VehicleDoorStatus event = (VehicleDoorStatus) measurement;
-            mHandler.post(new Runnable() {
-                public void run() {
-                    mDoorStatusView.setText(
-                        event.getValue().enumValue() + " is ajar: " +
-                        event.getEvent().booleanValue());
-                }
-            });
-        }
-    };
-
     Latitude.Listener mLatitude =
             new Latitude.Listener() {
         public void receive(Measurement measurement) {
@@ -380,10 +348,6 @@ public class VehicleDashboardActivity extends Activity {
                         mLatitude);
                 mVehicleManager.addListener(Longitude.class,
                         mLongitude);
-                mVehicleManager.addListener(VehicleButtonEvent.class,
-                        mButtonEvent);
-                mVehicleManager.addListener(VehicleDoorStatus.class,
-                        mDoorStatus);
             } catch(VehicleServiceException e) {
                 Log.w(TAG, "Couldn't add listeners for measurements", e);
             } catch(UnrecognizedMeasurementTypeException e) {
@@ -444,10 +408,6 @@ public class VehicleDashboardActivity extends Activity {
                 R.id.android_latitude);
         mAndroidLongitudeView = (TextView) findViewById(
                 R.id.android_longitude);
-        mButtonEventView = (TextView) findViewById(
-                R.id.button_event);
-        mDoorStatusView = (TextView) findViewById(
-                R.id.door_status);
         mBuffer = new StringBuffer();
     }
 

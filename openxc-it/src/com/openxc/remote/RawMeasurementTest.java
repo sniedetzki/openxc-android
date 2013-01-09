@@ -1,5 +1,7 @@
 package com.openxc.remote;
 
+import java.util.Map;
+
 import junit.framework.Assert;
 import junit.framework.TestCase;
 
@@ -28,8 +30,7 @@ public class RawMeasurementTest extends TestCase {
     }
 
     public void testInvalidTimestampGetsTimestampped() {
-        measurement = new RawMeasurement(measurementName, measurementValue,
-                null, 0);
+        measurement = new RawMeasurement(measurementName, measurementValue, 0);
         assertTrue(measurement.isTimestamped());
         assertFalse(0 == measurement.getTimestamp());
     }
@@ -49,6 +50,17 @@ public class RawMeasurementTest extends TestCase {
         } catch(UnrecognizedMeasurementTypeException e) {}
         assertEquals(measurement.getName(), measurementName);
         assertEquals(measurement.getValue(), measurementValue);
+    }
+
+    public void testDeserializeComplexValue() {
+        try {
+            measurement = new RawMeasurement(
+                    "{\"name\": \"" + measurementName + "\", \"value\": " +
+                    "{\"key\": " + measurementValue.toString() + "}}");
+        } catch(UnrecognizedMeasurementTypeException e) {}
+        assertEquals(measurement.getName(), measurementName);
+        Map value = (Map) measurement.getValue();
+        assertEquals(value.get("key"), measurementValue);
     }
 
     public void testDeserializeInvalidJson() {

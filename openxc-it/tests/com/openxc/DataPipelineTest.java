@@ -65,7 +65,7 @@ public class DataPipelineTest extends TestCase {
 
     public void testReceiveNewData() {
         pipeline.addSink(sink);
-        pipeline.receive(new RawMeasurement("measurement", "value", "event"));
+        pipeline.receive(new RawMeasurement("measurement", "value"));
         assertTrue(sink.received);
     }
 
@@ -99,8 +99,7 @@ public class DataPipelineTest extends TestCase {
 
         public void sendTestMessage() {
             if(callback != null) {
-                callback.receive(new RawMeasurement("message", "value",
-                            "event"));
+                callback.receive(new RawMeasurement("message", "value"));
             }
         }
 

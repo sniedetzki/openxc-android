@@ -48,29 +48,18 @@ public class VehicleButtonEvent
         STUCK
     }
 
-    public VehicleButtonEvent(State<ButtonId> value,
-            State<ButtonAction> event) {
-        super(value, event);
+    public VehicleButtonEvent(State<ButtonId> value) {
+        // TODO refactor to use a map as value instead of old-style event
+        super(value);
     }
 
-    public VehicleButtonEvent(ButtonId value, ButtonAction event) {
-        this(new State<ButtonId>(value), new State<ButtonAction>(event));
+    public VehicleButtonEvent(ButtonId value) {
+        // TODO refactor to use a map as value instead of old-style event
+        this(new State<ButtonId>(value));
     }
 
-    public VehicleButtonEvent(String value, String event) {
-        this(ButtonId.valueOf(value.toUpperCase(Locale.US)),
-                ButtonAction.valueOf(event.toUpperCase(Locale.US)));
-    }
-
-    @SuppressWarnings("unchecked")
-	@Override
-    public State<ButtonAction> getEvent() {
-        return (State<ButtonAction>) super.getEvent();
-    }
-
-    @Override
-    public String getSerializedEvent() {
-        return getEvent().enumValue().toString();
+    public VehicleButtonEvent(String value) {
+        this(ButtonId.valueOf(value.toUpperCase(Locale.US)));
     }
 
     @Override

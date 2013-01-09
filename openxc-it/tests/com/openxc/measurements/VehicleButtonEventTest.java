@@ -14,16 +14,13 @@ public class VehicleButtonEventTest extends TestCase {
     public void setUp() {
         measurement = new VehicleButtonEvent(
                 new State<VehicleButtonEvent.ButtonId>(
-                    VehicleButtonEvent.ButtonId.OK),
-                new State<VehicleButtonEvent.ButtonAction>(
-                    VehicleButtonEvent.ButtonAction.PRESSED));
+                    VehicleButtonEvent.ButtonId.OK));
     }
 
     public void testGet() {
         assertThat(measurement.getValue().enumValue(), equalTo(
                     VehicleButtonEvent.ButtonId.OK));
-        assertThat(measurement.getEvent().enumValue(), equalTo(
-                    VehicleButtonEvent.ButtonAction.PRESSED));
+        // TODO test new style value map instead of old event
     }
 
     public void testHasNoRange() {
