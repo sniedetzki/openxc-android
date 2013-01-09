@@ -1,7 +1,9 @@
 package com.openxc.remote;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import android.os.Parcel;
@@ -184,6 +186,9 @@ public class RawMeasurement implements Parcelable {
         measurement.mCachedSerialization = measurementString;
     }
 
+    // TODO it seems like we shouldn't have to do all of this by hand, handling
+    // primatives, objects and arrays. we're not expecting custom types, so
+    // isn't there a better API?
     private static Object parseUnknownType(JsonParser parser, JsonToken token) {
         Object value = null;
         try {
@@ -196,6 +201,12 @@ public class RawMeasurement implements Parcelable {
                     valueObject.put(field, subValue);
                 }
                 value = valueObject;
+            } else if(token == JsonToken.START_ARRAY) {
+                List<Object> valueList = new ArrayList<Object>();
+                while((token = parser.nextToken()) != JsonToken.END_ARRAY) {
+                    valueList.add(parseUnknownType(parser, token));
+                }
+                value = valueList;
             } else {
                 try {
                     value = parser.getNumberValue();

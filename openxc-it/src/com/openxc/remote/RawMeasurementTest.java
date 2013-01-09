@@ -1,5 +1,6 @@
 package com.openxc.remote;
 
+import java.util.List;
 import java.util.Map;
 
 import junit.framework.Assert;
@@ -59,8 +60,21 @@ public class RawMeasurementTest extends TestCase {
                     "{\"key\": " + measurementValue.toString() + "}}");
         } catch(UnrecognizedMeasurementTypeException e) {}
         assertEquals(measurement.getName(), measurementName);
-        Map value = (Map) measurement.getValue();
+        Map<String, Object> value = (Map<String, Object>) measurement.getValue();
         assertEquals(value.get("key"), measurementValue);
+    }
+
+    public void testDeserializeListValue() {
+        try {
+            measurement = new RawMeasurement(
+                    "{\"name\": \"" + measurementName + "\", \"value\": " +
+                    "[0, 1, 2, 3]}");
+        } catch(UnrecognizedMeasurementTypeException e) {}
+        assertEquals(measurement.getName(), measurementName);
+        List<Object> value = (List<Object>) measurement.getValue();
+        for(int i = 0; i < 4; i++) {
+            assertEquals(i, value.get(i));
+        }
     }
 
     public void testDeserializeInvalidJson() {
