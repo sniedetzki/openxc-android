@@ -33,7 +33,7 @@ import com.openxc.util.Range;
  * Measurement. If you know of a better way, please say so.
  */
 public class BaseMeasurement<TheUnit extends Unit> implements Measurement {
-    private AgingData<TheUnit> mValue;
+    protected AgingData<TheUnit> mValue;
     private Range<TheUnit> mRange;
     private static BiMap<String, Class<? extends Measurement>>
             sMeasurementIdToClass;
