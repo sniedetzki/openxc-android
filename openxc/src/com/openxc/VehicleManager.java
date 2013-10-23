@@ -2,6 +2,8 @@ package com.openxc;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
@@ -115,7 +117,6 @@ public class VehicleManager extends Service implements SourceCallback {
     private CopyOnWriteArrayList<VehicleDataSource> mSources =
             new CopyOnWriteArrayList<VehicleDataSource>();
 
-    private boolean mIsBound;
     private VehicleServiceInterface mRemoteService;
     private RemoteListenerSource mRemoteSource;
     private VehicleInterface mRemoteController;
@@ -179,14 +180,17 @@ public class VehicleManager extends Service implements SourceCallback {
      */
     public void waitUntilBound() {
         mRemoteBoundLock.lock();
-        Log.i(TAG, "Waiting for the VehicleService to bind to " + this);
-        while(mRemoteService == null) {
-            try {
-                mRemoteBoundCondition.await();
-            } catch(InterruptedException e) {}
+        try {
+            Log.i(TAG, "Waiting for the VehicleService to bind to " + this);
+            while(mRemoteService == null) {
+                try {
+                    mRemoteBoundCondition.await();
+                } catch(InterruptedException e) {}
+            }
+            Log.i(TAG, mRemoteService + " is now bound");
+        } finally {
+            mRemoteBoundLock.unlock();
         }
-        Log.i(TAG, mRemoteService + " is now bound");
-        mRemoteBoundLock.unlock();
     }
 
     /**
@@ -604,8 +608,11 @@ public class VehicleManager extends Service implements SourceCallback {
             mPipeline.addSource(mRemoteSource);
 
             mRemoteBoundLock.lock();
+            try {
             mRemoteBoundCondition.signalAll();
-            mRemoteBoundLock.unlock();
+            } finally {
+                mRemoteBoundLock.unlock();
+            }
         }
 
         public void onServiceDisconnected(ComponentName className) {
@@ -613,7 +620,7 @@ public class VehicleManager extends Service implements SourceCallback {
             mInterfaces.remove(mRemoteController);
             mRemoteService = null;
             mPipeline.removeSource(mRemoteSource);
-            bindRemote();
+            new VehicleServiceBindingTask();
         }
     };
 
@@ -622,7 +629,6 @@ public class VehicleManager extends Service implements SourceCallback {
         Intent intent = new Intent(VehicleServiceInterface.class.getName());
         try {
             bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-            mIsBound = true;
         } catch(SecurityException e) {
             Log.e(TAG, "Unable to bind with remote service, it's not exported "
                     + "-- is the instrumentation tests package installed?", e);
@@ -633,19 +639,33 @@ public class VehicleManager extends Service implements SourceCallback {
     }
 
     private void unbindRemote() {
-        if(mRemoteBoundLock != null) {
-            mRemoteBoundLock.lock();
-        }
-
-        if(mIsBound) {
-            Log.i(TAG, "Unbinding from VehicleService");
-            unbindService(mConnection);
-            mRemoteService = null;
-            mIsBound = false;
-        }
-
-        if(mRemoteBoundLock != null) {
+        mRemoteBoundLock.lock();
+        try {
+            if(mRemoteService != null) {
+                Log.i(TAG, "Unbinding from VehicleService");
+                unbindService(mConnection);
+                mRemoteService = null;
+            }
+        } finally {
             mRemoteBoundLock.unlock();
+        }
+    }
+
+    private class VehicleServiceBindingTask extends TimerTask {
+        private static final int RECONNECTION_ATTEMPT_WAIT_TIME_S = 2;
+
+        private Timer mTimer = new Timer();
+
+        public VehicleServiceBindingTask() {
+            mTimer.schedule(this, 0, RECONNECTION_ATTEMPT_WAIT_TIME_S * 1000);
+        }
+
+        public void run() {
+            if(VehicleManager.this.mRemoteService != null) {
+                mTimer.cancel();
+            }
+
+            VehicleManager.this.bindRemote();
         }
     }
 }
