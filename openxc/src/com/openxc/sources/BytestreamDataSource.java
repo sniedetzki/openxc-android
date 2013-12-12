@@ -26,6 +26,7 @@ public abstract class BytestreamDataSource extends ContextualVehicleDataSource
     private Thread mThread;
     private BytestreamConnectingTask mConnectionCheckTask;
     private PayloadFormat mCurrentPayloadFormat = null;
+    private int mMessageCounter;
 
     private enum PayloadFormat {
         JSON, PROTO
@@ -112,8 +113,9 @@ public abstract class BytestreamDataSource extends ContextualVehicleDataSource
             }
 
             if(received > 0) {
+
                 buffer.receive(bytes, received);
-                if(mCurrentPayloadFormat == null) {
+                if(mCurrentPayloadFormat == null || mMessageCounter == 0) {
                     if(buffer.containsJson()) {
                         mCurrentPayloadFormat = PayloadFormat.JSON;
                         Log.i(getTag(), "Source is sending JSON");
@@ -121,18 +123,21 @@ public abstract class BytestreamDataSource extends ContextualVehicleDataSource
                         mCurrentPayloadFormat = PayloadFormat.PROTO;
                         Log.i(getTag(), "Source is sending protocol buffers");
                     }
+                    mMessageCounter = 0;
                 }
 
                 switch(mCurrentPayloadFormat) {
                     case JSON:
                         for(String record : buffer.readLines()) {
                             handleMessage(record);
+                            mMessageCounter++;
                         }
                         break;
                     case PROTO:
                         BinaryMessages.VehicleMessage message = null;
                         while((message = buffer.readBinaryMessage()) != null) {
                             handleMessage(message);
+                            mMessageCounter++;
                         }
                         break;
                 }
