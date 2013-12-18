@@ -1,23 +1,24 @@
 package com.openxc.enabler;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.*;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+
 import com.openxc.VehicleManager;
 import com.openxc.enabler.preferences.PreferenceManagerService;
-import com.openxc.enabler.utils.AppUtils;
-
-import java.util.Timer;
-import java.util.TimerTask;
 
 /** The OpenXC Enabler app is primarily for convenience, but it also increases
  * the reliability of OpenXC by handling background tasks on behalf of client
