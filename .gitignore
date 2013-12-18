@@ -9,6 +9,6 @@ reference
 .settings
 .project
 .classpath
-.idea/workspace.xml
+.idea
 *.releaseBackup
 release.properties
