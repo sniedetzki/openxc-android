@@ -12,10 +12,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-import com.crittercism.app.Crittercism;
 import com.openxc.VehicleManager;
 import com.openxc.enabler.preferences.PreferenceManagerService;
-import com.openxc.enabler.utils.AppConst;
 import com.openxc.enabler.utils.AppUtils;
 
 import java.util.Timer;
@@ -128,14 +126,13 @@ public class OpenXcEnablerActivity extends Activity {
                 mServiceNotRunningWarningView.setVisibility(View.VISIBLE);
             }
         });
-
-        processCrittercismInitDialog();
     }
 
     @Override
     public void onResume() {
         super.onResume();
         Log.i(TAG, "OpenXC Enabler resumed");
+        ErrorReporter.getUserConfirmation(this);
         bindService(new Intent(this, VehicleManager.class),
                 mConnection, Context.BIND_AUTO_CREATE);
     }
@@ -171,49 +168,5 @@ public class OpenXcEnablerActivity extends Activity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main, menu);
         return true;
-    }
-
-    /**
-     * Process Crittercism. If user previously selects YES - initialize. If NO - skip. If none of above
-     * provide a dialog.
-     */
-    private void processCrittercismInitDialog() {
-        final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        int crittercismPreferenceValue = preferences.getInt(AppConst.CRITTERCISM_DIALOG_DECISION_KEY,
-                AppConst.CRITTERCISM_DIALOG_DECISION_DEFAULT);
-
-        if (crittercismPreferenceValue == AppConst.CRITTERCISM_DIALOG_DECISION_NO) {
-            return;
-        }
-        if (crittercismPreferenceValue == AppConst.CRITTERCISM_DIALOG_DECISION_YES) {
-            Crittercism.initialize(getApplicationContext(), AppConst.CRITTERCISM_APP_ID);
-            return;
-        }
-        int appVersionCode = AppUtils.getAppVersionCode(this);
-        if (appVersionCode < AppConst.CRITTERCISM_INIT_VERSION_CODE) {
-            return;
-        }
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                SharedPreferences.Editor editor = preferences.edit();
-                editor.putInt(AppConst.CRITTERCISM_DIALOG_DECISION_KEY, AppConst.CRITTERCISM_DIALOG_DECISION_YES);
-                editor.commit();
-
-                Crittercism.initialize(getApplicationContext(), AppConst.CRITTERCISM_APP_ID);
-            }
-        });
-        builder.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                SharedPreferences.Editor editor = preferences.edit();
-                editor.putInt(AppConst.CRITTERCISM_DIALOG_DECISION_KEY, AppConst.CRITTERCISM_DIALOG_DECISION_NO);
-                editor.commit();
-            }
-        });
-        AlertDialog dialog = builder.create();
-        dialog.setCancelable(false);
-        dialog.setTitle(getString(R.string.crittercism_dialog_title));
-        dialog.setMessage(getString(R.string.crittercism_dialog_message));
-        dialog.show();
     }
 }
