@@ -4,12 +4,6 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.util.Log;
 
-/**
- * Created with IntelliJ IDEA.
- * User: Chernyshov Yuriy
- * Date: 12/14/13
- * Time: 8:11 PM
- */
 public class AppUtils {
 
     private static String TAG = "AppUtils";
