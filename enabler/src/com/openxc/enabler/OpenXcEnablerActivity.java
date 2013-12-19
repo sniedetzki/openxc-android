@@ -19,6 +19,7 @@ import android.widget.TextView;
 
 import com.openxc.VehicleManager;
 import com.openxc.enabler.preferences.PreferenceManagerService;
+import com.openxc.enabler.utils.AppUtils;
 
 /** The OpenXC Enabler app is primarily for convenience, but it also increases
  * the reliability of OpenXC by handling background tasks on behalf of client

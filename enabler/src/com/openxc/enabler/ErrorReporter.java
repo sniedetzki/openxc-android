@@ -31,10 +31,14 @@ public class ErrorReporter {
             return;
         }
         if (crittercismPreferenceValue == CRITTERCISM_DIALOG_DECISION_YES) {
-            Crittercism.initialize(context, CRITTERCISM_APP_ID);
+            String key = AppUtils.getCrittercismKey(getContext());
+            if (key.isEmpty()) {
+                return;
+            }
+            Crittercism.initialize(getApplicationContext(), key);
             return;
         }
-        int appVersionCode = AppUtils.getAppVersionCode(context);
+        int appVersionCode = AppUtils.getAppVersionCode(getContext());
         if (appVersionCode < CRITTERCISM_INIT_VERSION_CODE) {
             return;
         }
@@ -45,7 +49,12 @@ public class ErrorReporter {
                 editor.putInt(CRITTERCISM_DIALOG_DECISION_KEY, CRITTERCISM_DIALOG_DECISION_YES);
                 editor.commit();
 
-                Crittercism.initialize(context, CRITTERCISM_APP_ID);
+                String key = AppUtils.getCrittercismKey(context);
+                if (key.isEmpty()) {
+                    return;
+                }
+                Crittercism.initialize(getApplicationContext(), key);
+                return;
             }
         });
         builder.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
