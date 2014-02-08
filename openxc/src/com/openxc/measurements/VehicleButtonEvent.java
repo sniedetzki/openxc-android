@@ -33,7 +33,11 @@ public class VehicleButtonEvent
         RIGHT,
         UP,
         DOWN,
-        OK
+        OK,
+        VOLUMEUP,
+        VOLUMEDOWN,
+        TUNEUP,
+        TUNEDOWN
     }
 
     /**
